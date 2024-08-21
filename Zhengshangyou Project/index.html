@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zheng Shangyou</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Zheng Shangyou</h1>
+    <div id="room-container">
+        <h2>Join a Room</h2>
+        <p>Enter Room Name:</p>
+        <input type="text" id="room-name" placeholder="Room Name">
+        <p>Enter Your Name:</p>
+        <input type="text" id="player-name" placeholder="Your Name">
+        <button id="join-room-button" onclick="joinRoom()">Join Room</button>
+    </div>
+    <div id="game-board" style="display:none;">
+        <h2>Room: <span id="room-display"></span></h2>
+        <div id="players"></div>
+        <div id="order-display"></div>
+        <div id="turn-display"></div>
+        <button id="start-game-button" onclick="readyToStart()" style="display:none;" disabled>Start Game</button>
+        <div id="hand"></div>
+        <button id="send-button" onclick="playTurn()" style="display:none;">Send</button>
+        <button id="pass-button" onclick="passTurn()" style="display:none;">Pass</button>
+        <button id="exit-room" onclick="exitRoom()" style="display:none;">Exit Room</button>
+
+        <!-- Error Message Display -->
+        <div id="error-message">Error message will appear here.</div>
+    </div>
+
+    <div id="right-panel" style="display:none;">
+        <h3>Game Info</h3>
+        <div id="played-cards"></div>
+        <div id="game-info"></div>
+    </div>
+
+    <script>
+        let socket;
+        let currentRoom = null;
+        let playerName = null;
+        let nextCardIndex = 0; // Global index for card IDs
+        let isPlayerTurn = false;  // Track whether it is the player's turn
+        let previousPlay = null;  // Track the previous play for rule enforcement
+        const cardRankings = ['4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2', '3', 'Black Joker', 'Red Joker'];
+
+        function joinRoom() {
+            const roomName = document.getElementById('room-name').value;
+            playerName = document.getElementById('player-name').value;
+            if (roomName && playerName) {
+                socket = new WebSocket('wss://localhost:8080');
+                socket.onopen = () => {
+                    socket.send(JSON.stringify({ type: 'join', room: roomName, playerName }));
+                    document.getElementById('join-room-button').disabled = true;
+                };
+                socket.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    handleServerMessage(message);
+                };
+                currentRoom = roomName;
+            } else {
+                alert('Please enter a room name and your name.');
+            }
+        }
+
+        function handleServerMessage(message) {
+            switch (message.type) {
+                case 'room_joined':
+                    document.getElementById('room-container').style.display = 'none';
+                    document.getElementById('game-board').style.display = 'block';
+                    document.getElementById('right-panel').style.display = 'block';  // Show the right panel
+                    document.getElementById('room-display').innerText = currentRoom;
+                    renderPlayers(message.players);
+                    document.getElementById('start-game-button').style.display = 'block';
+                    if (message.players.length >= 2) {
+                        document.getElementById('start-game-button').disabled = false;
+                    }
+                    break;
+                case 'start_game':
+                    distributeCards(message.deck);
+                    renderOrder(message.order);
+                    updateTurnDisplay(message.currentPlayer);
+                    break;
+                case 'player_move':
+                    previousPlay = message.playedCards.length > 0 ? message.playedCards[message.playedCards.length - 1] : null; // Track the last play or reset if empty
+                    updatePlayerCards(message.players);
+                    displayPlayedCards(message.playedCards);
+                    updateTurnDisplay(message.currentPlayer);
+                    break;
+                case 'update_cards':
+                    updatePlayerCardCount(message.playerName, message.cardsLeft);
+                    break;
+                case 'game_over':
+                    displayRankings(message.rankings);
+                    break;
+                case 'error':
+                    displayError(message.message);
+                    break;
+                case 'player_left':
+                    alert(message.message);
+                    exitRoom();
+                    break;
+            }
+        }
+
+        function displayError(message) {
+            console.log("Error function triggered:", message); // Check if the function is being called
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.innerText = message; // Set the message text
+            errorMessage.classList.add('show'); // Add the class to make it visible
+
+            // Optionally hide it after some time
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+                errorMessage.innerText = ''; // Clear the message if needed
+            }, 3000); // Adjust time as necessary
+        }
+
+        function renderPlayers(players) {
+            document.getElementById('players').innerHTML = players.map(player =>
+                `<p>${player.name} - Cards left: <span id="card-count-${player.name}">${player.hand.length}</span> ${player.finished ? '(Finished)' : ''}</p>`
+            ).join('');
+            if (players.length >= 2) {
+                document.getElementById('start-game-button').disabled = false;
+            }
+        }
+
+        function renderOrder(order) {
+            document.getElementById('order-display').innerHTML = `<p>Turn Order: ${order.join(', ')}</p>`;
+        }
+
+        function updateTurnDisplay(currentPlayer) {
+            document.getElementById('turn-display').innerHTML = `<p>Current Turn: ${currentPlayer}</p>`;
+            isPlayerTurn = currentPlayer === playerName;
+
+            // Enable or disable card selection, Send, and Pass buttons based on whether it's the player's turn
+            if (isPlayerTurn) {
+                document.getElementById('send-button').disabled = false;
+                document.getElementById('pass-button').disabled = false;
+                enableCardSelection(true);
+            } else {
+                document.getElementById('send-button').disabled = true;
+                document.getElementById('pass-button').disabled = true;
+                enableCardSelection(false);
+            }
+        }
+
+        // function updateTurnDisplay(currentPlayer) {
+        //     document.getElementById('turn-display').innerHTML = `<p>Current Turn: ${currentPlayer}</p>`;
+        //     isPlayerTurn = currentPlayer === playerName;
+
+        //     // Enable or disable card selection, Send, and Pass buttons based on whether it's the player's turn
+        //     if (isPlayerTurn) {
+        //         document.getElementById('send-button').disabled = false;
+        //         document.getElementById('pass-button').disabled = false;
+        //         enableCardSelection(true);
+        //     } else {
+        //         document.getElementById('send-button').disabled = true;
+        //         document.getElementById('pass-button').disabled = true;
+        //         enableCardSelection(false);
+        //     }
+        // }
+
+        function readyToStart() {
+            socket.send(JSON.stringify({ type: 'ready', room: currentRoom }));
+            document.getElementById('start-game-button').disabled = true;
+        }
+
+        function distributeCards(deck) {
+            // Sort cards before displaying them
+            const sortedDeck = deck.sort((a, b) => rankToValue(a.value) - rankToValue(b.value));
+            // Render the player's hand with the sorted deck of cards
+            document.getElementById('hand').innerHTML = sortedDeck.map((card, index) =>
+                `<button class="card-btn" onclick="selectCard(${index})" id="card-${index}" disabled>${card.value}</button>`
+            ).join('');
+            document.getElementById('send-button').style.display = 'block';
+            document.getElementById('pass-button').style.display = 'block';
+        }
+
+        // function selectCard(index) {
+        //     if (!isPlayerTurn) return;  // Prevent card selection if it's not the player's turn
+        //     const cardButton = document.getElementById(`card-${index}`);
+        //     cardButton.classList.toggle('selected');
+        // }
+
+        function selectCard(uniqueId) {
+            console.log('isPlayerTurn:', isPlayerTurn); // Debug log
+            if (!isPlayerTurn) return;  // Prevent card selection if it's not the player's turn
+
+            const cardButton = document.getElementById(`card-${uniqueId}`);
+            if (cardButton) {
+                cardButton.classList.toggle('selected');
+            } else {
+                console.error(`Element with ID 'card-${uniqueId}' not found.`);
+            }
+        }
+
+        function playTurn() {
+            if (!isPlayerTurn) return;  // Prevent sending cards if it's not the player's turn
+            const selectedCards = Array.from(document.getElementsByClassName('selected')).map(button => button.innerText);
+            const playType = determinePlayType(selectedCards);
+
+            // Validate based on the current play type and the previous play
+            if (!validatePlay(selectedCards, playType)) {
+                displayError("Invalid play based on the game rules.");
+                return;
+            }
+
+            if (selectedCards.length > 0) {
+                // Send the selected cards to the server
+                socket.send(JSON.stringify({ type: 'play_turn', room: currentRoom, cards: selectedCards }));
+                // Remove the cards from the player's hand after sending the play to the server
+                removePlayedCards(selectedCards);
+            }
+        }
+
+        function determinePlayType(cards) {
+            if (isPair(cards)) {
+                return 'Pair';
+            } else if (isRegularBomb(cards)) {
+                return 'Regular Bomb';
+            } else if (isUltraBomb(cards)) {
+                return 'Ultra Bomb';
+            } else if (isStraight(cards)) {
+                return 'Straight';
+            } else if (cards.length === 1) {
+                return 'Single';
+            }
+            return 'Other';
+        }
+
+        function validatePlay(cards, playType) {
+            if (playType === 'Other') {
+                return false;
+            }
+
+            // Allow any valid play when there is no previous play
+            if (!previousPlay) {
+                return true;
+            }
+
+            // Check if the current play is a pair of Jokers
+            if (isPairOfJokers(cards)) {
+                return true; // Two Jokers can beat any previous play
+            }
+
+            // Validate pairs
+            if (playType === 'Pair' && !isPair(cards)) {
+                return false; // Pair must consist of two cards of the same rank
+            }
+
+            // Validate regular bombs
+            if (playType === 'Regular Bomb' && !isRegularBomb(cards)) {
+                return false; // Regular Bomb must consist of three cards of the same rank
+            }
+
+            // Validate ultra bombs
+            if (playType === 'Ultra Bomb' && !isUltraBomb(cards)) {
+                return false; // Ultra Bomb must consist of four cards of the same rank
+            }
+
+            // Handle precedence rules based on the previous play
+            if (previousPlay) {
+                const previousPlayType = determinePlayType(previousPlay.cards);
+
+                // Rule: Nothing can beat a pair of Jokers
+                if (isPairOfJokers(previousPlay.cards)) {
+                    return false; // Nothing can beat a pair of Jokers
+                }
+
+                // New Rule: A single card cannot be beaten by a pair of cards unless they are Jokers
+                if (previousPlayType === 'Single' && playType === 'Pair' && !isPairOfJokers(cards)) {
+                    return false; // Cannot beat a single card with a non-Joker pair
+                }
+
+                // Updated Rule: If the previous play was an Ultra Bomb, the next play must either be two Jokers, an Ultra Bomb of a higher rank, or three 4s.
+                if (previousPlayType === 'Ultra Bomb') {
+                    if (playType !== 'Ultra Bomb' && !isThreeOfFours(cards)) {
+                        return false;
+                    }
+                    if (playType === 'Ultra Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                        return false; // The next Ultra Bomb must be of higher rank
+                    }
+                    if (isThreeOfFours(cards)) {
+                        collectBomb(previousPlay.cards, 'Ultra Bomb'); // Collect the Ultra Bomb if three 4s are played
+                    }
+                }
+
+                // Updated Rule: If the previous play was a Regular Bomb, the next play must either be two Jokers, a Regular Bomb of a higher rank, an Ultra Bomb, or a pair of 4s.
+                if (previousPlayType === 'Regular Bomb') {
+                    if (playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfFours(cards)) {
+                        return false;
+                    }
+                    if (playType === 'Regular Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                        return false; // The next Regular Bomb must be of higher rank
+                    }
+                    if (isPairOfFours(cards)) {
+                        collectBomb(previousPlay.cards, 'Regular Bomb'); // Collect the Regular Bomb if a pair of 4s is played
+                    }
+                }
+
+                // New Rule: If the previous play was a Pair, the next play must be a Pair of a higher rank, a Regular Bomb, an Ultra Bomb, or a Pair of Jokers
+                if (previousPlayType === 'Pair') {
+                    if (playType !== 'Pair' && playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
+                        return false; // Invalid play, only a higher pair, bomb, or jokers allowed
+                    }
+                    if (playType === 'Pair' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                        return false; // The next Pair must be of higher rank
+                    }
+                }
+
+                // New Rule: If the previous play was a Straight, the next play must be a Straight with the same number of cards but a higher rank, a Regular Bomb, an Ultra Bomb, or two Jokers
+                if (previousPlayType === 'Straight') {
+                    if (isPairSet(previousPlay.cards)) {
+                        // If the previous play was a pair straight, it can only be beaten by a higher pair straight, an ultra bomb, or a pair of jokers
+                        if (
+                            (playType !== 'Straight' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) ||
+                            (playType === 'Straight' && !isPairSet(cards))
+                        ) {
+                            return false; // Invalid play, only a higher pair straight, ultra bomb, or jokers allowed
+                        }
+                        if (playType === 'Straight') {
+                            // Ensure the pair straight has the same number of pairs and is of higher rank
+                            const previousStraightLength = previousPlay.cards.length;
+                            const currentStraightLength = cards.length;
+
+                            // Check if the current straight is a higher rank and of the same length
+                            if (currentStraightLength !== previousStraightLength || rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                                return false; // The next pair straight must have the same length and be of higher rank
+                            }
+                        }
+                    } else if (isRegularBombSet(previousPlay.cards)) {
+                        // If previous play was a regular bomb set straight, it can only be beaten by a higher regular bomb straight, an ultra bomb straight, or a pair of jokers
+                        if (playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
+                            return false; // Invalid play, only a higher regular bomb straight, ultra bomb straight, or jokers can beat a regular bomb straight
+                        }
+                        if (playType === 'Regular Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                            return false; // The next regular bomb straight must be of higher rank
+                        }
+                    } else if (isUltraBombSet(previousPlay.cards)) {
+                        // If previous play was an ultra bomb set straight, it can only be beaten by a higher ultra bomb straight or a pair of jokers
+                        if (playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
+                            return false; // Invalid play, only a higher ultra bomb straight or jokers can beat an ultra bomb straight
+                        }
+                        if (playType === 'Ultra Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                            return false; // The next ultra bomb straight must be of higher rank
+                        }
+                    } else {
+                        // Handle normal single-card straights
+                        if (playType !== 'Straight' && playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
+                            return false; // Invalid play, only a higher straight, bomb, or jokers allowed
+                        }
+                        if (playType === 'Straight') {
+                            // Ensure the straight has the same number of cards and a higher rank
+                            const previousStraightLength = previousPlay.cards.length;
+                            if (cards.length !== previousStraightLength || rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                                return false; // The next Straight must have the same length and be of higher rank
+                            }
+                        }
+                    }
+                }
+
+                // Rule: Single card must be of higher rank than the previous single card
+                if (previousPlayType === 'Single' && playType === 'Single') {
+                    return rankToValue(cards[0]) > rankToValue(previousPlay.cards[0]);
+                }
+
+                // Collecting bombs
+                if (playType === 'Regular Bomb' && previousPlayType === 'Ultra Bomb') {
+                    return rankToValue(cards[0]) === rankToValue('4'); // Regular Bomb of 4s can collect an Ultra Bomb
+                }
+                if (playType === 'Pair' && previousPlayType === 'Regular Bomb') {
+                    return rankToValue(cards[0]) === rankToValue('4'); // Pair of 4s can collect a Regular Bomb
+                }
+            }
+
+            return true; // If all validations pass, the play is valid
+        }
+
+        function isThreeOfFours(cards) {
+            return cards.length === 3 && cards.every(card => card === '4');
+        }
+
+        function isPairOfFours(cards) {
+            return cards.length === 2 && cards.every(card => card === '4');
+        }
+
+        function isPairSet(cards) {
+            const groupCounts = Object.values(groupCardsByValue(cards));
+            return groupCounts.every(count => count === 2);
+        }
+
+        function isRegularBombSet(cards) {
+            const groupCounts = Object.values(groupCardsByValue(cards));
+            return groupCounts.every(count => count === 3);
+        }
+
+        function isUltraBombSet(cards) {
+            const groupCounts = Object.values(groupCardsByValue(cards));
+            return groupCounts.every(count => count === 4);
+        }
+
+        function groupCardsByValue(cards) {
+            const groupedCards = {};
+            cards.forEach(card => {
+                if (!groupedCards[card]) {
+                    groupedCards[card] = 0;
+                }
+                groupedCards[card]++;
+            });
+            return groupedCards;
+        }
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0,
+                    v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function collectBomb(bombCards, bombType) {
+            console.log(`Collected a ${bombType}:`, bombCards);
+
+            const handElement = document.getElementById('hand');
+
+            bombCards.forEach(card => {
+                const newCardButton = document.createElement('button');
+                newCardButton.classList.add('card-btn');
+                newCardButton.innerText = card;
+
+                // Generate a unique ID for each card to prevent any conflicts
+                const uniqueId = generateUUID();
+                newCardButton.id = `card-${uniqueId}`;
+
+                // Bind the click event to the unique ID
+                newCardButton.onclick = function () {
+                    selectCard(uniqueId);
+                };
+
+                handElement.appendChild(newCardButton);
+            });
+
+            // Update the player's card count in the UI
+            const playerCardCount = handElement.children.length;
+            document.getElementById(`card-count-${playerName}`).innerText = playerCardCount;
+
+            // Send the update to the server to ensure consistency
+            socket.send(JSON.stringify({
+                type: 'collect_bomb',
+                room: currentRoom,
+                playerName: playerName,
+                bombCards: bombCards // Send the collected bomb cards to the server
+            }));
+        }
+
+        function isPair(cards) {
+            if (cards.length !== 2) {
+                return false;
+            }
+
+            const card1 = cards[0];
+            const card2 = cards[1];
+
+            // Check if the two cards have the same value
+            if (card1 === card2) {
+                return true;
+            }
+
+            // Check if the cards are a pair of Black and Red Jokers
+            const isJokerPair = (card1 === 'Black Joker' && card2 === 'Red Joker') ||
+                (card1 === 'Red Joker' && card2 === 'Black Joker');
+
+            return isJokerPair;
+        }
+
+        function isRegularBomb(cards) {
+            return cards.length === 3 && cards.every(card => card === cards[0]);
+        }
+
+        function isUltraBomb(cards) {
+            return cards.length === 4 && cards.every(card => card === cards[0]);
+        }
+
+        // function isStraight(cards) {
+        //     if (cards.length < 3) return false;
+        //     const sortedCards = cards.map(card => rankToValue(card)).sort((a, b) => a - b);
+        //     for (let i = 1; i < sortedCards.length; i++) {
+        //         if (sortedCards[i] !== sortedCards[i - 1] + 1) {
+        //             return false;
+        //         }
+        //     }
+        //     return true;
+        // }
+
+
+
+        function isStraight(cards) {
+            if (cards.length < 3) return false; // Minimum of 3 cards for a straight
+
+            // Step 1: Group the cards by value
+            const groupedCards = {};
+            cards.forEach(card => {
+                if (!groupedCards[card]) {
+                    groupedCards[card] = 0;
+                }
+                groupedCards[card]++;
+            });
+
+            // Step 2: Determine the type of set (Pair, Regular Bomb, Ultra Bomb)
+            const groupCounts = Object.values(groupedCards);
+            const isPairSet = groupCounts.every(count => count === 2);
+            const isRegularBombSet = groupCounts.every(count => count === 3);
+            const isUltraBombSet = groupCounts.every(count => count === 4);
+
+            // Step 3: Check for duplicates only if it's not a pair set, regular bomb set, or ultra bomb set
+            if (!isPairSet && !isRegularBombSet && !isUltraBombSet) {
+                const hasDuplicates = groupCounts.some(count => count > 1);
+                if (hasDuplicates) {
+                    return false; // Invalid straight due to duplicates
+                }
+            }
+
+            // Step 4: Sort the values and check if they are consecutive
+            const sortedValues = Object.keys(groupedCards)
+                .map(value => rankToValue(value))
+                .sort((a, b) => a - b);
+
+            for (let i = 1; i < sortedValues.length; i++) {
+                if (sortedValues[i] !== sortedValues[i - 1] + 1) {
+                    return false; // Not a consecutive straight
+                }
+            }
+
+            // Step 5: Ensure strict consecutiveness for pairs, regular bombs, or ultra bombs
+            if ((isPairSet || isRegularBombSet || isUltraBombSet) && sortedValues.length >= 3) {
+                return true; // Valid straight of pairs, regular bombs, or ultra bombs
+            }
+
+            // Step 6: Ensure there are at least 3 consecutive cards for a single-card straight
+            return sortedValues.length >= 3; // Valid single-card straight
+        }
+
+        function isPairOfJokers(cards) {
+            return cards.length === 2 && cards.includes('Red Joker') && cards.includes('Black Joker');
+        }
+
+        function rankToValue(rank) {
+            return cardRankings.indexOf(rank);
+        }
+
+        function removePlayedCards(cards) {
+            cards.forEach(card => {
+                // Find the button elements that match the card value and are selected
+                const cardButtons = Array.from(document.getElementsByClassName('card-btn'));
+                // Find all buttons with the matching card value
+                const buttonsToRemove = cardButtons.filter(btn => btn.innerText.trim() === card.trim() && btn.classList.contains('selected'));
+                // Remove the found buttons from the DOM
+                buttonsToRemove.forEach(button => {
+                    console.log(`Removing card: ${card}`);  // Debugging output
+                    button.remove();  // Remove the button from the DOM
+                });
+            });
+
+            // Update the player's card count after removing the played cards
+            const playerCardCount = document.getElementsByClassName('card-btn').length;
+            document.getElementById(`card-count-${playerName}`).innerText = playerCardCount;
+        }
+
+        function updatePlayerCardCount(playerName, cardsLeft) {
+            document.getElementById(`card-count-${playerName}`).innerText = cardsLeft;
+        }
+
+        function passTurn() {
+            if (!isPlayerTurn) return;  // Prevent passing if it's not the player's turn
+            socket.send(JSON.stringify({ type: 'pass_turn', room: currentRoom }));
+        }
+
+        function enableCardSelection(enable) {
+            const cardButtons = document.getElementsByClassName('card-btn');
+            for (let button of cardButtons) {
+                button.disabled = !enable;
+            }
+        }
+
+        function updatePlayerCards(players) {
+            players.forEach(player => {
+                document.getElementById(`card-count-${player.name}`).innerText = player.hand.length;
+            });
+        }
+
+        function displayPlayedCards(playedCards) {
+            document.getElementById('played-cards').innerHTML = playedCards.length > 0
+                ? playedCards.map(play => `<p>${play.name} played: ${play.cards.join(', ')}</p>`).join('')
+                : '<p>All players passed. You can play any valid combination of cards.</p>'; // Message for reset
+        }
+
+        function displayRankings(rankings) {
+            document.getElementById('game-info').innerHTML = `<h2>Game Over! Rankings:</h2><ol>${rankings.map(name => `<li>${name}</li>`).join('')}</ol>`;
+            document.getElementById('exit-room').style.display = 'block';
+        }
+
+        function exitRoom() {
+            socket.send(JSON.stringify({ type: 'leave', room: currentRoom }));
+            socket.close();
+            currentRoom = null;
+            document.getElementById('game-board').style.display = 'none';
+            document.getElementById('right-panel').style.display = 'none';  // Hide the right panel
+            document.getElementById('room-container').style.display = 'block';
+            document.getElementById('game-info').innerHTML = '';
+            document.getElementById('played-cards').innerHTML = '';
+            document.getElementById('players').innerHTML = '';
+            document.getElementById('room-name').value = '';
+            document.getElementById('player-name').value = '';
+            document.getElementById('exit-room').style.display = 'none';
+        }
+
+        window.onload = function () {
+            document.getElementById('room-container').style.display = 'block';
+            document.getElementById('game-board').style.display = 'none';
+            document.getElementById('right-panel').style.display = 'none';  // Ensure the right panel is hidden initially
+        };
+    </script>
+</body>
+
+</html>

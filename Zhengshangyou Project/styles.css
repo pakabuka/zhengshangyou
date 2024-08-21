@@ -1,0 +1,322 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+h1 {
+    color: #333;
+    margin-top: 20px;
+    font-size: 36px;
+}
+
+#room-container {
+    margin: 20px auto;
+    width: 300px;
+    text-align: left;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}
+
+#room-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#join-room-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s ease;
+}
+
+#join-room-button:hover {
+    background-color: #4cae4c;
+}
+
+#game-board-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#game-board {
+    flex: 2;
+    max-width: 800px;
+}
+
+#right-panel {
+    flex: 1;
+    max-width: 300px;
+    background-color: #dff0d8;
+    border: 2px solid #3c763d;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+#players {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+#hand {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.card-btn {
+    width: 70px;
+    height: 100px;
+    font-size: 18px;
+    text-align: center;
+    border: 1px solid #333;
+    border-radius: 10px;
+    background-color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-btn.selected {
+    background-color: #a0c4ff;
+    border: 2px solid #333;
+}
+
+#action-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+#exit-room {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: rgb(248, 248, 248);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#send-button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-color: #5bc0de;
+}
+
+#send-button:hover {
+    background-color: #31b0d5;
+}
+
+#send-button:disabled {
+    background-color: #9a9d9e;
+}
+
+#pass-button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-color: #f0ad4e;
+}
+
+#pass-button:hover {
+    background-color: #ec971f;
+}
+
+
+#pass-button:disabled {
+    background-color: #9a9d9e;
+}
+
+#exit-room:hover {
+    background-color: #ff0800;
+}
+
+/* Styling for Room Display and Player Info */
+#room-display {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#players p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Styling for Game Information and Rankings */
+#game-info {
+    margin-top: 20px;
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+#game-info ol {
+    margin: 10px 0;
+}
+
+#game-info li {
+    font-size: 16px;
+    color: #333;
+}
+
+#played-cards {
+    margin-top: 20px;
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+#played-cards p {
+    font-size: 16px;
+    color: #3c763d;
+}
+
+/* Styling for Turn Display */
+#turn-display {
+    background-color: #dff0d8;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for Error Messages */
+#error-message {
+    margin-top: 20px;
+    font-size: 16px;
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    color: #a94442;
+    padding: 10px;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Show error message when needed */
+#error-message.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Styling for Start Game Button */
+#start-game-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #5bc0de;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 20px;
+}
+
+#start-game-button:hover {
+    background-color: #31b0d5;
+}
+
+/* Change color after click */
+#start-game-button:disabled {
+    background-color: #a0a5a6;
+}
+
+/* Button states for disabled elements */
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 480px) {
+    #game-board-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #game-board {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    #right-panel {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .card-btn {
+        font-size: 20px;
+        width: 45px;
+        height: 65;
+        font-size: 12px;
+    }
+
+    #room-display,
+    #order-display,
+    #turn-display {
+        font-size: 18px;
+    }
+
+    #send-button,
+    #pass-button,
+    #exit-room,
+    #start-game-button {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    #right-panel h3 {
+        font-size: 16px;
+    }
+}
