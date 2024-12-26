@@ -449,4 +449,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Serve the index.html on GET '/'
+app.get('/rules.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'rules.html'));
+});
+
 console.log('WebSocket server is running on http://localhost:8080');
