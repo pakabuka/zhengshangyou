@@ -1,5 +1,7 @@
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
+const PORT = process.env.PORT || 8080; // Render provides the PORT environment variable
+
+const wss = new WebSocket.Server({ port: PORT });
 
 let rooms = {};
 
