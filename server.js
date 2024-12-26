@@ -1,8 +1,25 @@
+// server.js
+const express = require('express');
+const path = require('path');
+const http = require('http');
 const WebSocket = require('ws');
-// const PORT = process.env.PORT || 443; // Render provides the PORT environment variable
-const PORT = 8080;
-const wss = new WebSocket.Server({ port: PORT });
 
+// Initialize Express app
+const app = express();
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Create an HTTP server
+const server = http.createServer(app);
+
+// Initialize WebSocket server instance
+const wss = new WebSocket.Server({ server });
+
+// Port configuration
+const PORT = process.env.PORT || 8080;
+
+// WebSocket connection handling
 let rooms = {};
 
 wss.on('connection', (ws) => {
@@ -21,12 +38,14 @@ wss.on('connection', (ws) => {
             case 'pass_turn':
                 handlePassTurn(ws, data);
                 break;
-            case 'collect_bomb':  // handle bomb collection
+            case 'collect_bomb':
                 handleCollectBomb(ws, data);
                 break;
             case 'leave':
                 handleLeave(ws, data);
                 break;
+            default:
+                ws.send(JSON.stringify({ type: 'error', message: 'Unknown message type.' }));
         }
     });
 
@@ -35,6 +54,9 @@ wss.on('connection', (ws) => {
     });
 });
 
+server.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
+});
 function handleJoin(ws, data) {
     if (!rooms[data.room]) {
         rooms[data.room] = {
