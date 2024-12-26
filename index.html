@@ -87,7 +87,7 @@
                 // socket = new WebSocket('wss://zhengshangyou.onrender.com'); //change for deployment
                 const socketURL = location.protocol === 'https:'
                     ? 'wss://zhengshangyou.onrender.com'
-                    : 'ws://localhost:8080';
+                    : 'ws://localhost:443';
                 socket = new WebSocket(socketURL);
                 socket.onopen = () => {
                     socket.send(JSON.stringify({ type: 'join', room: roomName, playerName }));
