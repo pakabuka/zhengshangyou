@@ -1,4 +1,5 @@
 // server.js
+
 const express = require('express');
 const path = require('path');
 const http = require('http');
@@ -57,7 +58,13 @@ wss.on('connection', (ws) => {
 server.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
+
+/** 
+ * JOIN ROOM 
+ * Updated to send distinct messages: "room_full" or "duplicate_name" 
+ */
 function handleJoin(ws, data) {
+    // If the room doesn't exist, create it
     if (!rooms[data.room]) {
         rooms[data.room] = {
             players: [],
@@ -69,28 +76,50 @@ function handleJoin(ws, data) {
             rankings: [],
             currentCombination: null,
             previousPlay: null,
-            lastPlayerWhoPlayed: null, // Track the last player who made a valid move
-            passCount: 0 // Track how many players have passed
+            lastPlayerWhoPlayed: null,
+            passCount: 0
         };
     }
 
     const room = rooms[data.room];
 
-    if (room.players.length < 5 && !room.players.some(player => player.name === data.playerName)) {
-        room.players.push({ ws, name: data.playerName, hand: [], finished: false });
-
-        // Notify all players in the room about the updated player list
-        room.players.forEach(player => {
-            player.ws.send(JSON.stringify({
-                type: 'room_joined',
-                players: room.players.map(p => ({ name: p.name, hand: p.hand, finished: p.finished }))
-            }));
-        });
-    } else {
-        ws.send(JSON.stringify({ type: 'error', message: 'Room is full or name is already taken.' }));
+    // Check if the room is full (5-player limit here)
+    if (room.players.length >= 5) {
+        ws.send(JSON.stringify({ 
+            type: 'error', 
+            message: 'room_full'  // <--- Distinct error message
+        }));
+        return;
     }
+
+    // Check if this player name is already taken
+    if (room.players.some(player => player.name === data.playerName)) {
+        ws.send(JSON.stringify({ 
+            type: 'error', 
+            message: 'duplicate_name' // <--- Distinct error message
+        }));
+        return;
+    }
+
+    // Otherwise, add the player
+    room.players.push({ ws, name: data.playerName, hand: [], finished: false });
+
+    // Notify all players in the room about the updated player list
+    room.players.forEach(player => {
+        player.ws.send(JSON.stringify({
+            type: 'room_joined',
+            players: room.players.map(p => ({
+                name: p.name,
+                hand: p.hand,
+                finished: p.finished
+            }))
+        }));
+    });
 }
 
+/**
+ * READY
+ */
 function handleReady(ws, data) {
     const room = rooms[data.room];
     if (room && room.players.length >= 2) {
@@ -101,6 +130,9 @@ function handleReady(ws, data) {
     }
 }
 
+/**
+ * START GAME
+ */
 function startGame(roomName) {
     const room = rooms[roomName];
     distributeCards(room);
@@ -112,7 +144,7 @@ function startGame(roomName) {
     room.previousPlay = null;
     room.lastPlayerWhoPlayed = null;
 
-    // Notify all players of the start of the game and the order
+    // Notify all players that the game has started
     room.players.forEach(player => {
         player.ws.send(JSON.stringify({
             type: 'start_game',
@@ -123,60 +155,71 @@ function startGame(roomName) {
     });
 }
 
+/**
+ * DISTRIBUTE CARDS
+ */
 function distributeCards(room) {
     let deckCopy = [...room.deck];
     const numPlayers = room.players.length;
     const cardsPerPlayer = Math.floor(deckCopy.length / numPlayers);
 
     room.players.forEach(player => {
-        player.hand = deckCopy.splice(0, cardsPerPlayer); // Deal cards and remove them from the deck copy
+        player.hand = deckCopy.splice(0, cardsPerPlayer); // Deal cards
     });
 
+    // If some cards remain, distribute them one by one
     if (deckCopy.length > 0) {
-        // In case the deck doesn't divide evenly, distribute remaining cards
         deckCopy.forEach((card, index) => {
             room.players[index % numPlayers].hand.push(card);
         });
     }
 }
 
+/**
+ * PLAY TURN
+ */
 function handlePlayTurn(ws, data) {
     const room = rooms[data.room];
     const currentPlayer = room.order[room.currentPlayerIndex];
 
-    // Ensure the player trying to play the cards is the current player
+    // Ensure the right person is playing
     if (currentPlayer.ws !== ws) {
         ws.send(JSON.stringify({ type: 'error', message: 'It is not your turn to play.' }));
         return;
     }
 
-    // Update the current and previous play
+    // Update the "previousPlay" and "currentCombination"
     room.previousPlay = { cards: data.cards, type: getPlayType(data.cards) };
     room.currentCombination = data.cards;
-    room.lastPlayerWhoPlayed = currentPlayer.name; // Track the last player who made a valid play
-    room.passCount = 0; // Reset pass count when a valid move is made
+    room.lastPlayerWhoPlayed = currentPlayer.name;
+    room.passCount = 0; // Reset pass count on valid move
 
-    // Remove the played cards from the player's hand
+    // Remove played cards from the player's hand
     const playedCards = [];
     data.cards.forEach(card => {
         const cardIndex = currentPlayer.hand.findIndex(c => c.value === card);
         if (cardIndex !== -1) {
-            playedCards.push(currentPlayer.hand.splice(cardIndex, 1)[0]); // Remove card from player's hand
+            playedCards.push(currentPlayer.hand.splice(cardIndex, 1)[0]);
         }
     });
 
+    // Track played cards in "playedCards" array
     room.playedCards.push({ name: currentPlayer.name, cards: data.cards });
 
-    // Notify all players about the updated card count
+    // Notify all players about updated card counts
     room.players.forEach(player => {
-        player.ws.send(JSON.stringify({ type: 'update_cards', playerName: currentPlayer.name, cardsLeft: currentPlayer.hand.length }));
+        player.ws.send(JSON.stringify({
+            type: 'update_cards',
+            playerName: currentPlayer.name,
+            cardsLeft: currentPlayer.hand.length
+        }));
     });
 
-    // Check if the player has finished all their cards
+    // If this player finished
     if (currentPlayer.hand.length === 0) {
         currentPlayer.finished = true;
-        room.rankings.push(currentPlayer.name); // Add to rankings
-        
+        room.rankings.push(currentPlayer.name);
+
         // Check if all other players pass on the last card
         if (room.passCount === room.players.filter(p => !p.finished && p.name !== currentPlayer.name).length) {
             room.previousPlay = null;
@@ -187,10 +230,10 @@ function handlePlayTurn(ws, data) {
         }
     }
 
-    // Check if the game should end
-    const remainingPlayers = room.players.filter(player => !player.finished);
+    // Check if game ends
+    const remainingPlayers = room.players.filter(p => !p.finished);
     if (remainingPlayers.length <= 1) {
-        // Add the last player to the rankings if there's one remaining
+        // If there's exactly 1 left, add them to the ranking
         if (remainingPlayers.length === 1) {
             room.rankings.push(remainingPlayers[0].name);
         }
@@ -198,10 +241,13 @@ function handlePlayTurn(ws, data) {
         return;
     }
 
-    // Move to the next player
+    // Move to next player
     moveToNextPlayer(room);
 }
 
+/**
+ * COLLECT BOMB
+ */
 function handleCollectBomb(ws, data) {
     const room = rooms[data.room];
     const player = room.players.find(p => p.name === data.playerName);
@@ -216,52 +262,56 @@ function handleCollectBomb(ws, data) {
         player.hand.push({ value: cardValue });
     });
 
-    // Notify all players about the updated card count
+    // Notify all players
     room.players.forEach(p => {
         p.ws.send(JSON.stringify({
             type: 'update_cards',
             playerName: player.name,
-            cardsLeft: player.hand.length // Send the updated hand size
+            cardsLeft: player.hand.length
         }));
     });
 
-    // Ensure the player remains active in the game
-    player.finished = false; // Ensure the player is not marked as finished
+    player.finished = false; // Ensure player is not marked finished
 }
 
+/**
+ * PASS TURN
+ */
 function handlePassTurn(ws, data) {
     const room = rooms[data.room];
     const currentPlayer = room.order[room.currentPlayerIndex];
 
-    // Ensure the player trying to pass the turn is the current player
     if (currentPlayer.ws !== ws) {
         ws.send(JSON.stringify({ type: 'error', message: 'It is not your turn to pass.' }));
         return;
     }
 
-    // Increase the pass count
     room.passCount++;
 
-    // Check if all other players have passed except the last player who made a valid play
-    const remainingActivePlayers = room.players.filter(player => player.name !== room.lastPlayerWhoPlayed && !player.finished);
+    // Check if all other active players have passed
+    const remainingActivePlayers = room.players.filter(
+        p => p.name !== room.lastPlayerWhoPlayed && !p.finished
+    );
     if (room.passCount === remainingActivePlayers.length) {
         room.previousPlay = null;
         room.currentCombination = null;
-        room.playedCards = []; // Reset the playedCards array
-        room.passCount = 0;  // Reset the pass count
-        
-        // Check if the last player has finished their cards
-        const lastPlayer = room.players.find(player => player.name === room.lastPlayerWhoPlayed);
+        room.playedCards = [];
+        room.passCount = 0;
+
+        // If the last player who played is finished, just move on
+        const lastPlayer = room.players.find(p => p.name === room.lastPlayerWhoPlayed);
         if (lastPlayer && lastPlayer.finished) {
             moveToNextPlayer(room);
             return;
         }
     }
 
-    // Move to the next player
     moveToNextPlayer(room);
 }
 
+/**
+ * MOVE TO NEXT PLAYER
+ */
 function moveToNextPlayer(room) {
     do {
         room.currentPlayerIndex = (room.currentPlayerIndex + 1) % room.players.length;
@@ -272,7 +322,11 @@ function moveToNextPlayer(room) {
     room.players.forEach(player => {
         player.ws.send(JSON.stringify({
             type: 'player_move',
-            players: room.players.map(p => ({ name: p.name, hand: p.hand, finished: p.finished })),
+            players: room.players.map(p => ({
+                name: p.name,
+                hand: p.hand,
+                finished: p.finished
+            })),
             playedCards: room.playedCards,
             currentPlayer: nextPlayer.name,
             nextPlayer: room.order[(room.currentPlayerIndex + 1) % room.players.length].name
@@ -280,6 +334,9 @@ function moveToNextPlayer(room) {
     });
 }
 
+/**
+ * HANDLE LEAVE
+ */
 function handleLeave(ws, data) {
     const room = rooms[data.room];
     if (room) {
@@ -287,7 +344,10 @@ function handleLeave(ws, data) {
         if (leavingPlayer) {
             room.players = room.players.filter(player => player.ws !== ws);
             room.players.forEach(player => {
-                player.ws.send(JSON.stringify({ type: 'player_left', message: `${leavingPlayer.name} has left the room.` }));
+                player.ws.send(JSON.stringify({
+                    type: 'player_left',
+                    message: `${leavingPlayer.name} has left the room.`
+                }));
             });
             if (room.players.length === 0) {
                 delete rooms[data.room];
@@ -296,6 +356,9 @@ function handleLeave(ws, data) {
     }
 }
 
+/**
+ * HANDLE DISCONNECT
+ */
 function handleDisconnect(ws) {
     for (let roomName in rooms) {
         const room = rooms[roomName];
@@ -306,13 +369,19 @@ function handleDisconnect(ws) {
                 delete rooms[roomName];
             } else {
                 room.players.forEach(player => {
-                    player.ws.send(JSON.stringify({ type: 'player_left', message: `${disconnectedPlayer.name} has disconnected.` }));
+                    player.ws.send(JSON.stringify({
+                        type: 'player_left',
+                        message: `${disconnectedPlayer.name} has disconnected.`
+                    }));
                 });
             }
         }
     }
 }
 
+/**
+ * CREATE DECK
+ */
 function createDeck() {
     const values = ['3', '2', 'A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4'];
     const deck = [];
@@ -328,9 +397,13 @@ function createDeck() {
     deck.push({ value: 'Red Joker' });
     deck.push({ value: 'Black Joker' });
 
-    return deck.sort(() => Math.random() - 0.5); // Randomize the deck only once
+    // Randomize the deck once
+    return deck.sort(() => Math.random() - 0.5);
 }
 
+/**
+ * SHUFFLE ARRAY
+ */
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -339,6 +412,9 @@ function shuffleArray(array) {
     return array;
 }
 
+/**
+ * END GAME
+ */
 function endGame(room) {
     room.players.forEach(player => {
         player.ws.send(JSON.stringify({
@@ -349,6 +425,9 @@ function endGame(room) {
     delete rooms[room.name];
 }
 
+/**
+ * GET PLAY TYPE
+ */
 function getPlayType(cards) {
     if (cards.length === 2) {
         return 'Pair';
@@ -365,7 +444,7 @@ function getPlayType(cards) {
     return 'Other';
 }
 
-// At the end of your server.js, after all other routes and middleware
+// Serve the index.html on GET '/'
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
