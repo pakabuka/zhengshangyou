@@ -4,23 +4,18 @@
     "description": "Zheng Shangyou - A Poker Room WebSocket-based game.",
     "main": "server.js",
     "scripts": {
-      "start": "node server.js", 
-      "start-server": "node server.js",            
-      "start-client": "http-server ./ -p 3000",   
-      "dev": "concurrently \"yarn start-server\" \"yarn start-client\"", 
-      "build": "echo 'No build step required for static HTML/CSS.'"
+        "start": "node server.js",
+        "dev": "node server.js",
+        "build": "echo 'No build step required for static HTML/CSS.'"
     },
     "dependencies": {
-      "ws": "^8.13.0",
-      "dotenv": "^16.0.0"
+        "express": "^4.18.2",
+        "ws": "^8.13.0"
     },
-    "devDependencies": {
-      "http-server": "^14.1.1", 
-      "concurrently": "^7.6.0"
-    },
+    "devDependencies": {},
     "engines": {
-      "node": ">=16.0.0"
+        "node": ">=16.0.0"
     },
     "author": "Frederick Liu <frederick@example.com>",
     "license": "MIT"
-  }
+}
