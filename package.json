@@ -16,6 +16,9 @@
       "http-server": "^14.1.1", 
       "concurrently": "^7.6.0"
     },
-    "author": "Your Name",
+    "engines": {
+    "node": ">=16.0.0"                          
+  },
+    "author": "Frederick Liu",
     "license": "MIT"
   }
