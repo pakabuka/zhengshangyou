@@ -370,4 +370,4 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-console.log('WebSocket server is running on https://localhost:8080');
+console.log('WebSocket server is running on http://localhost:8080');
