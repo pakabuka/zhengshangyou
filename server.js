@@ -365,4 +365,9 @@ function getPlayType(cards) {
     return 'Other';
 }
 
-console.log('WebSocket server is running on ws://localhost:8080');
+// At the end of your server.js, after all other routes and middleware
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+console.log('WebSocket server is running on https://localhost:8080');
