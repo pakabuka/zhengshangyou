@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <!-- Updated viewport meta tag with viewport-fit -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Zheng Shangyou - Poker Room</title>
+    <title>Zheng Shangyou</title>
     <!-- Google Fonts for a more elegant typography -->
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto+Slab:wght@400;700&display=swap"
@@ -42,15 +43,18 @@
         /* Body Styling */
         body {
             font-family: 'Montserrat', sans-serif;
-            background-image: url('https://www.transparenttextures.com/patterns/black-linen.png'); /* Subtle texture */
-            background-size: cover; /* Ensure background covers entire screen */
+            background-image: url('https://www.transparenttextures.com/patterns/black-linen.png');
+            /* Subtle texture */
+            background-size: cover;
+            /* Ensure background covers entire screen */
             background-color: #2e2e2e;
             color: #f5f5f5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
+            /* Prevent horizontal scrolling */
         }
 
         /* Overlay for semi-transparent background with safe area insets */
@@ -64,21 +68,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative; /* For the info-icon positioning */
+            position: relative;
+            /* For the info-icon positioning */
         }
 
-        /* ICON BUTTON (top-left corner) */
+        /* ICON BUTTON (top-right corner) */
         .info-icon {
             position: absolute;
             top: 20px;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            background-color: #ffd700;
-            color: #000000;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            background-color: #888;
+            /* Grey background */
+            color: #fff;
             border: none;
             border-radius: 50%;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.2s;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -88,8 +94,10 @@
             align-items: center;
             text-align: center;
         }
+
         .info-icon:hover {
-            background-color: #c9ab02;
+            background-color: #666;
+            /* Darker grey on hover */
             transform: translateY(-2px);
         }
 
@@ -97,10 +105,10 @@
         @media screen and (max-width: 400px) {
             .info-icon {
                 top: 10px;
-                left: 10px;
-                width: 36px;
-                height: 36px;
-                font-size: 1.2rem;
+                right: 10px;
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
             }
         }
 
@@ -110,11 +118,11 @@
             position: fixed;
             z-index: 999;
             left: 0;
-            top: 0; 
+            top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.7);
         }
 
         /* MODAL CONTENT */
@@ -148,7 +156,8 @@
         .title {
             font-family: 'Roboto Slab', serif;
             font-size: 2rem;
-            color: #ffd700; /* Gold color */
+            color: #ffd700;
+            /* Gold color */
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px #000;
         }
@@ -224,10 +233,12 @@
         }
 
         #join-room-button {
-            background-color: #ffd700; 
+            background-color: #ffd700;
             color: #000000;
-            display: block;       /* Makes the button a block element */
-            margin: 0 auto;       /* Horizontally centers it within its container */
+            display: block;
+            /* Makes the button a block element */
+            margin: 0 auto;
+            /* Horizontally centers it within its container */
         }
 
         #join-room-button:hover {
@@ -253,7 +264,8 @@
         }
 
         #send-button {
-            background-color: #00bb42; /* Blue */
+            background-color: #00bb42;
+            /* Greenish */
             color: #ffffff;
         }
 
@@ -268,7 +280,7 @@
         }
 
         #pass-button {
-            background-color: #ff0707; /* Yellow */
+            background-color: #ff0707;
             color: #feffff;
         }
 
@@ -283,7 +295,8 @@
         }
 
         #exit-room {
-            background-color: #dc3545; /* Red */
+            background-color: #dc3545;
+            /* Red */
             color: #fff;
         }
 
@@ -468,6 +481,7 @@
                 flex-direction: column;
                 align-items: center;
             }
+
             #game-board,
             #right-panel {
                 max-width: 100%;
@@ -491,6 +505,7 @@
                 flex-direction: column;
                 align-items: center;
             }
+
             #game-board,
             #right-panel {
                 max-width: 100%;
@@ -580,7 +595,7 @@
             text-align: center;
         }
 
-        /* Played Card Styling (Reduced size and to wrap) */
+        /* Played Card Styling */
         .played-card {
             width: 40px;
             height: 60px;
@@ -631,6 +646,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Modal for About Section -->
     <div id="about-modal" class="modal">
@@ -639,43 +655,55 @@
             <div class="about-section">
                 <h2>About “Zheng Shangyou”</h2>
                 <p>
-                    <strong>Zheng Shangyou</strong> (争上游), also known as "Fight the Landlord's Cousin" in some regions, is a captivating card game that emphasizes strategy, quick decision-making, and timely teamwork (when multiple players are involved).
+                    <strong>Zheng Shangyou</strong> (争上游), also known as "Fight the Landlord's Cousin" in some regions,
+                    is a captivating card game that emphasizes strategy, quick decision-making, and timely teamwork
+                    (when multiple players are involved).
                 </p>
                 <p>
-                    The name "争上游" translates roughly to "strive to be on top," reflecting the competitive nature of the game as players race to deplete their hand before anyone else.
+                    The name "争上游" translates roughly to "strive to be on top," reflecting the competitive nature of the
+                    game as players race to deplete their hand before anyone else.
                 </p>
                 <h3>How to Play</h3>
                 <ul>
                     <li>Players join a virtual room and each is dealt a hand of cards.</li>
-                    <li>On your turn, you can either play a valid combination of cards (single, pairs, bombs, straights, etc.) or choose to pass if you cannot or do not wish to play.</li>
-                    <li>When a player finishes all their cards, the game ends and the rankings are announced based on the order in which players run out of cards.</li>
+                    <li>On your turn, you can either play a valid combination of cards (single, pairs, bombs, straights,
+                        etc.) or choose to pass if you cannot or do not wish to play.</li>
+                    <li>When a player finishes all their cards, the game ends and the rankings are announced based on
+                        the order in which players run out of cards.</li>
                 </ul>
                 <h3>Key Rules</h3>
                 <ul>
-                    <li><strong>Valid Plays:</strong> Singles, pairs, bombs (3 or 4 of a kind), straights, and special joker or “4” combos are all part of the fun.</li>
-                    <li><strong>Bombs Beat Everything:</strong> A bomb can beat any lower combination, but beware of special combos like joker pairs or “4” sets that can trump bombs.</li>
-                    <li><strong>Joker Power:</strong> A pair of Jokers beats any other combination (even bombs), except for the cases specially defined in the rules (like ultra bombs of higher rank).</li>
+                    <li><strong>Valid Plays:</strong> Singles, pairs, bombs (3 or 4 of a kind), straights, and special
+                        joker or “4” combos are all part of the fun.</li>
+                    <li><strong>Bombs Beat Everything:</strong> A bomb can beat any lower combination, but beware of
+                        special combos like joker pairs or “4” sets that can trump bombs.</li>
+                    <li><strong>Joker Power:</strong> A pair of Jokers beats any other combination (even bombs), except
+                        for the cases specially defined in the rules (like ultra bombs of higher rank).</li>
                 </ul>
                 <p>
-                    In essence, always keep an eye out for powerful combos that can shift the course of the game. Anticipate your opponents’ moves, manage your hand carefully, and strive to be the first to play all your cards.
+                    In essence, always keep an eye out for powerful combos that can shift the course of the game.
+                    Anticipate your opponents’ moves, manage your hand carefully, and strive to be the first to play all
+                    your cards.
                 </p>
             </div>
         </div>
     </div>
 
+
     <div class="overlay">
-        <!-- Icon Button (top-left) - Info Circle -->
+        <!-- <h1 class="title">Zheng Shangyou 争上游</h1> -->
+        <!-- Icon Button (top-right) - Grey circle -->
         <button class="info-icon" onclick="openAboutModal()">ℹ</button>
 
-        <h1 class="title">Zheng Shangyou 争上游</h1>
+
         <div id="room-container" class="card">
             <h2>Join a Room</h2>
             <p>Enter Room Name:</p>
-            <input type="text" id="room-name" placeholder="Room Name">
+            <input type="text" id="room-name" placeholder="Room Name（房间号）">
             <p>Enter Your Name:</p>
-            <input type="text" id="player-name" placeholder="Your Name">
+            <input type="text" id="player-name" placeholder="Your Name（名字）">
             <!-- Added aria-label for accessibility -->
-            <button id="join-room-button" onclick="joinRoom()" aria-label="Join Room">Join Room</button>
+            <button id="join-room-button" onclick="joinRoom()" aria-label="Join Room">Proceed!</button>
             <!-- Footer Footnote -->
             <p class="footer">© Frederick Liu. All rights reserved.</p>
         </div>
@@ -687,12 +715,16 @@
                 <div id="players" class="players-list"></div>
                 <div id="order-display" class="order-display"></div>
                 <div id="turn-display" class="turn-display"></div>
-                <button id="start-game-button" onclick="readyToStart()" style="display:none;" disabled aria-label="Start Game">Start Game</button>
+                <button id="start-game-button" onclick="readyToStart()" style="display:none;" disabled
+                    aria-label="Start Game">Start Game（开始）</button>
                 <div id="hand" class="hand"></div>
                 <div id="action-buttons">
-                    <button id="send-button" onclick="playTurn()" style="display:none;" aria-label="Send Cards">Play</button>
-                    <button id="pass-button" onclick="passTurn()" style="display:none;" aria-label="Pass Turn">Pass</button>
-                    <button id="exit-room" onclick="exitRoom()" style="display:none;" aria-label="Exit Room">Exit Room</button>
+                    <button id="send-button" onclick="playTurn()" style="display:none;"
+                        aria-label="Send Cards">Play（出牌）</button>
+                    <button id="pass-button" onclick="passTurn()" style="display:none;"
+                        aria-label="Pass Turn">Pass（不要）</button>
+                    <button id="exit-room" onclick="exitRoom()" style="display:none;" aria-label="Exit Room">Exit
+                        Room</button>
                 </div>
 
                 <!-- Error Message Display -->
@@ -708,12 +740,13 @@
     </div>
 
     <script>
+        /* JavaScript logic is unchanged, except for the openAboutModal/closeAboutModal that toggles the modal display. */
         let socket;
         let currentRoom = null;
         let playerName = null;
-        let nextCardIndex = 0; // Global index for card IDs
-        let isPlayerTurn = false;  // Track whether it is the player's turn
-        let previousPlay = null;  // Track the previous play for rule enforcement
+        let nextCardIndex = 0;
+        let isPlayerTurn = false;
+        let previousPlay = null;
         const cardRankings = ['4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2', '3', 'Black Joker', 'Red Joker'];
 
         /* MODAL FUNCTIONS */
@@ -818,7 +851,7 @@
 
         function renderPlayers(players) {
             document.getElementById('players').innerHTML = players.map(player =>
-                `<p>${player.name} - Cards left: <span id="card-count-${player.name}">${player.hand.length}</span> ${player.finished ? '(Finished)' : ''}</p>`
+                `<p>${player.name} - Cards Left (牌数): <span id="card-count-${player.name}">${player.hand.length}</span> ${player.finished ? '(Finished)' : ''}</p>`
             ).join('');
             if (players.length >= 2) {
                 document.getElementById('start-game-button').disabled = false;
@@ -826,11 +859,11 @@
         }
 
         function renderOrder(order) {
-            document.getElementById('order-display').innerHTML = `<p>Turn Order: ${order.join(', ')}</p>`;
+            document.getElementById('order-display').innerHTML = `<p>Turn Order（出牌顺序）: ${order.join(', ')}</p>`;
         }
 
         function updateTurnDisplay(currentPlayer) {
-            document.getElementById('turn-display').innerHTML = `<p>Current Turn: ${currentPlayer}</p>`;
+            document.getElementById('turn-display').innerHTML = `<p>Current Turn（当前回合）: ${currentPlayer}</p>`;
             isPlayerTurn = currentPlayer === playerName;
 
             // Enable or disable card selection, Send, and Pass buttons based on whether it's the player's turn
@@ -911,6 +944,8 @@
                 return true; // Two Jokers beats any previous play
             }
 
+            
+
             if (playType === 'Pair' && !isPair(cards)) {
                 return false;
             }
@@ -926,6 +961,23 @@
             // If the previous play was a pair of Jokers, nothing can beat it
             if (isPairOfJokers(previousPlay.cards)) {
                 return false;
+            }
+            // -----------------------------------------------------------
+            // NEW LOGIC: 3-of-a-kind cannot beat a single Joker,
+            //            but 4-of-a-kind CAN beat a single Joker
+            // -----------------------------------------------------------
+            if (
+                previousPlayType === 'Single' &&
+                (previousPlay.cards[0] === 'Black Joker' || previousPlay.cards[0] === 'Red Joker')
+            ) {
+                // If this new play is a 3-of-a-kind (regular bomb), reject
+                if (isRegularBomb(cards)) {
+                    return false;
+                }
+                // If it's a 4-of-a-kind (ultra bomb), allow
+                if (isUltraBomb(cards)) {
+                    return true;
+                }
             }
 
             // New Rule: single vs. pair
@@ -1109,7 +1161,7 @@
                 return true;
             }
             const isJokerPair = (card1 === 'Black Joker' && card2 === 'Red Joker') ||
-                                (card1 === 'Red Joker' && card2 === 'Black Joker');
+                (card1 === 'Red Joker' && card2 === 'Black Joker');
             return isJokerPair;
         }
 
@@ -1276,4 +1328,5 @@
         };
     </script>
 </body>
+
 </html>
