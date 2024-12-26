@@ -1,10 +1,19 @@
+const express = require('express');
+const http = require('http');
 const WebSocket = require('ws');
-const PORT = process.env.PORT || 443; // Render provides the PORT environment variable
 
-const wss = new WebSocket.Server({ port: PORT });
+const app = express();
+const PORT = process.env.PORT || 3000; // Render provides the PORT environment variable
+
+// Create an HTTP server
+const server = http.createServer(app);
+
+// Attach the WebSocket server to the HTTP server
+const wss = new WebSocket.Server({ server });
 
 let rooms = {};
 
+// Handle WebSocket connections
 wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         const data = JSON.parse(message);
