@@ -13,6 +13,34 @@
     <style>
         /* Existing CSS styles... */
 
+        /* Specific Styling for Red Joker */
+        .card-btn.red-joker {
+            border: 2px solid red; /* Default red border */
+        }
+
+        .card-btn.red-joker.selected {
+            border: 3px solid lightblue; /* Light blue border when selected */
+            box-shadow: 0 0 15px lightblue;
+        }
+
+        /* Specific Styling for Black Joker */
+        /* .card-btn.black-joker {
+            border: 2px solid black; 
+        }
+
+        .card-btn.black-joker.selected {
+            border: 3px solid lightblue; 
+            box-shadow: 0 0 15px lightblue;
+        } */
+
+        /* General Styling for Other Cards */
+        .card-btn.selected {
+            border: 3px solid lightblue; /* Existing red border for selected non-joker cards */
+            box-shadow: 0 0 15px lightblue;
+        }
+
+        /* Rest of your existing CSS... */
+
         /* Optional: Add styles for disabled buttons */
         button:disabled {
             opacity: 0.5;
@@ -79,7 +107,7 @@
             right: 20px;
             width: 30px;
             height: 30px;
-            background-color: #888;
+            background-color: #8888884a;
             /* Grey background */
             color: #fff;
             border: none;
@@ -93,10 +121,13 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+
+            margin: 0; /* Reset any external margins */
+    padding: 0; /* Reset any padding */
         }
 
         .info-icon:hover {
-            background-color: #666;
+            background-color: #bebebeba;
             /* Darker grey on hover */
             transform: translateY(-2px);
         }
@@ -359,10 +390,30 @@
             box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
         }
 
-        /* Updated Selected Card Styling */
+        /* Specific Styling for Red Joker */
+        .card-btn.red-joker {
+            border: 2px solid red; /* Default red border */
+        }
+
+        .card-btn.red-joker.selected {
+            border: 3px solid lightblue; /* Light blue border when selected */
+            box-shadow: 0 0 15px lightblue;
+        }
+
+        /* Specific Styling for Black Joker */
+        .card-btn.black-joker {
+            border: 2px solid rgb(161, 161, 161); /* Default black border */
+        }
+
+        .card-btn.black-joker.selected {
+            border: 3px solid lightblue; /* Light blue border when selected */
+            box-shadow: 0 0 15px lightblue;
+        }
+
+        /* General Styling for Other Cards */
         .card-btn.selected {
-            border: 3px solid #ff0000;
-            box-shadow: 0 0 15px #ff0000;
+            border: 3px solid lightblue; /* Existing red border for selected non-joker cards */
+            box-shadow: 0 0 15px lightblue;
         }
 
         /* Action Buttons Container */
@@ -687,7 +738,7 @@
                 </p>
                 <p>
                     Need more details? <a href="rules.html" target="_blank" style="color: #ffd700; text-decoration: underline;">View more rules here</a>.
-                  </p>
+                </p>
             </div>
         </div>
     </div>
@@ -700,7 +751,7 @@
 
 
         <div id="room-container" class="card">
-            <h2>Join a Room</h2>
+            <h2>Join a Room（加入房间）</h2>
             <p>Enter Room Name:</p>
             <input type="text" id="room-name" placeholder="Room Name（房间号）">
             <p>Enter Your Name:</p>
@@ -888,9 +939,15 @@
 
         function distributeCards(deck) {
             const sortedDeck = deck.sort((a, b) => rankToValue(a.value) - rankToValue(b.value));
-            document.getElementById('hand').innerHTML = sortedDeck.map((card, index) =>
-                `<button class="card-btn" onclick="selectCard(${index})" id="card-${index}" disabled>${card.value}</button>`
-            ).join('');
+            document.getElementById('hand').innerHTML = sortedDeck.map((card, index) => {
+                let jokerClass = '';
+                if (card.value === 'Red Joker') {
+                    jokerClass = ' red-joker';
+                } else if (card.value === 'Black Joker') {
+                    jokerClass = ' black-joker';
+                }
+                return `<button class="card-btn${jokerClass}" onclick="selectCard(${index})" id="card-${index}" disabled>${card.value}</button>`;
+            }).join('');
             document.getElementById('send-button').style.display = 'block';
             document.getElementById('pass-button').style.display = 'block';
         }
@@ -947,7 +1004,7 @@
                 return true; // Two Jokers beats any previous play
             }
 
-            
+
 
             if (playType === 'Pair' && !isPair(cards)) {
                 return false;
@@ -1265,7 +1322,7 @@
                     const cardButtons = play.cards.map(card => {
                         return `<button class="played-card" disabled>${card}</button>`;
                     }).join('');
-                    return `<p>${play.name} played: ${cardButtons}</p>`;
+                    return `<p>${play.name} played（打了）: ${cardButtons}</p>`;
                 }).join('');
             } else {
                 playedCardsContainer.innerHTML = '<p>All players passed. You can play any valid combination of cards.</p>';
