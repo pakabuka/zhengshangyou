@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <!-- Updated viewport meta tag with viewport-fit -->
@@ -11,6 +10,8 @@
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto+Slab:wght@400;700&display=swap"
         rel="stylesheet">
     <style>
+        /* Existing CSS styles... */
+
         /* Optional: Add styles for disabled buttons */
         button:disabled {
             opacity: 0.5;
@@ -45,7 +46,6 @@
             background-size: cover; /* Ensure background covers entire screen */
             background-color: #2e2e2e;
             color: #f5f5f5;
-            /* Changed from height to min-height to prevent issues on mobile */
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -56,7 +56,6 @@
         /* Overlay for semi-transparent background with safe area insets */
         .overlay {
             background: rgba(0, 0, 0, 0.8);
-            /* Adjusted padding to include safe area insets */
             padding: calc(30px + env(safe-area-inset-top)) calc(30px + env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) calc(30px + env(safe-area-inset-left));
             border-radius: 15px;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
@@ -65,12 +64,89 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative; /* For the info-icon positioning */
+        }
+
+        /* ICON BUTTON (top-left corner) */
+        .info-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #ffd700;
+            color: #000000;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .info-icon:hover {
+            background-color: #c9ab02;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive positioning for the icon so it doesn't overlap the title */
+        @media screen and (max-width: 400px) {
+            .info-icon {
+                top: 10px;
+                left: 10px;
+                width: 36px;
+                height: 36px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* MODAL (hidden by default) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0; 
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        /* MODAL CONTENT */
+        .modal-content {
+            background-color: #3e3e3e;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* CLOSE BUTTON FOR MODAL */
+        .close {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close:hover {
+            color: #ccc;
         }
 
         /* Title Styling */
         .title {
             font-family: 'Roboto Slab', serif;
-            /* Changed font-size to relative unit */
             font-size: 2rem;
             color: #ffd700; /* Gold color */
             margin-bottom: 20px;
@@ -99,18 +175,15 @@
         }
 
         h1.title {
-            /* Changed to relative unit */
             font-size: 2rem;
         }
 
         h2 {
-            /* Changed to relative unit */
             font-size: 1.8rem;
             margin-bottom: 15px;
         }
 
         h3 {
-            /* Changed to relative unit */
             font-size: 1.5rem;
             margin-bottom: 10px;
         }
@@ -121,13 +194,13 @@
             width: 100%;
             padding: 12px;
             margin: 8px 0;
-            /* Changed font-size to relative unit */
             font-size: 1rem;
             border: 1px solid #555;
             border-radius: 5px;
             background-color: #2e2e2e;
             color: #f5f5f5;
             outline: none;
+            text-align: center;
         }
 
         #room-container input::placeholder,
@@ -138,10 +211,8 @@
         /* Buttons */
         button {
             font-family: 'Montserrat', sans-serif;
-            /* Ensured minimum size for touch friendliness */
             min-width: 44px;
             min-height: 44px;
-            /* Changed padding and font-size to relative units */
             padding: 0.75em 1.5em;
             margin: 10px 5px;
             font-size: 1rem;
@@ -153,24 +224,26 @@
         }
 
         #join-room-button {
-            background-color: #28a745; /* Green */
-            color: #fff;
+            background-color: #ffd700; 
+            color: #000000;
+            display: block;       /* Makes the button a block element */
+            margin: 0 auto;       /* Horizontally centers it within its container */
         }
 
         #join-room-button:hover {
-            background-color: #218838;
+            background-color: #c4a708;
             transform: translateY(-2px);
         }
 
         #start-game-button {
-            background-color: #17a2b8; /* Teal */
-            color: #fff;
-            display: block; /* Makes the button a block element */
-            margin: 20px auto 0 auto; /* Centers the button horizontally */
+            background-color: #ffc107;
+            color: #000000;
+            display: block;
+            margin: 20px auto 0 auto;
         }
 
         #start-game-button:hover {
-            background-color: #138496;
+            background-color: #be9006;
             transform: translateY(-2px);
         }
 
@@ -180,12 +253,12 @@
         }
 
         #send-button {
-            background-color: #007bff; /* Blue */
-            color: #fff;
+            background-color: #00bb42; /* Blue */
+            color: #ffffff;
         }
 
         #send-button:hover {
-            background-color: #0069d9;
+            background-color: #007d2c;
             transform: translateY(-2px);
         }
 
@@ -195,12 +268,12 @@
         }
 
         #pass-button {
-            background-color: #ffc107; /* Yellow */
-            color: #212529;
+            background-color: #ff0707; /* Yellow */
+            color: #feffff;
         }
 
         #pass-button:hover {
-            background-color: #e0a800;
+            background-color: #a50000;
             transform: translateY(-2px);
         }
 
@@ -228,7 +301,7 @@
         }
 
         .players-list p {
-            font-size: 1rem; /* Changed to relative unit */
+            font-size: 1rem;
             color: #f5f5f5;
             margin: 5px 0;
             text-shadow: 1px 1px 2px #000;
@@ -243,14 +316,13 @@
         }
 
         .card-btn {
-            width: 60px; /* Increased width to accommodate longer text */
+            width: 60px;
             height: 90px;
             margin: 5px;
             background-color: #2e2e2e;
             border: 2px solid #ffd700;
             border-radius: 5px;
             color: #f5f5f5;
-            /* Changed font-size to relative unit */
             font-size: 0.875rem;
             cursor: pointer;
             transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
@@ -258,16 +330,14 @@
             background-size: cover;
             position: relative;
 
-            /* Added Flexbox properties for centering text */
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
 
-            /* Added properties to handle text wrapping */
             word-wrap: break-word;
             white-space: normal;
-            padding: 5px; /* Added padding for better spacing */
+            padding: 5px;
         }
 
         .card-btn:hover {
@@ -278,8 +348,8 @@
 
         /* Updated Selected Card Styling */
         .card-btn.selected {
-            border: 3px solid #ff0000; /* Red border */
-            box-shadow: 0 0 15px #ff0000; /* Red glow */
+            border: 3px solid #ff0000;
+            box-shadow: 0 0 15px #ff0000;
         }
 
         /* Action Buttons Container */
@@ -296,13 +366,20 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
+            min-height: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
         .played-cards p {
-            font-size: 1rem; /* Changed to relative unit */
+            font-size: 1rem;
             color: #f5f5f5;
             margin: 5px 0;
             text-shadow: 1px 1px 2px #000;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         /* Game Info Section */
@@ -313,7 +390,7 @@
         }
 
         .game-info h2 {
-            font-size: 1.6rem; /* Changed to relative unit */
+            font-size: 1.6rem;
             color: #ffd700;
             margin-bottom: 10px;
         }
@@ -334,14 +411,14 @@
             padding: 10px;
             border-radius: 5px;
             margin: 10px 0;
-            font-size: 1.125rem; /* Changed to relative unit */
+            font-size: 1.125rem;
             color: #ffd700;
             text-shadow: 1px 1px 2px #000;
         }
 
         /* Order Display */
         .order-display {
-            font-size: 1rem; /* Changed to relative unit */
+            font-size: 1rem;
             color: #f5f5f5;
             margin-bottom: 10px;
             text-shadow: 1px 1px 2px #000;
@@ -350,13 +427,13 @@
         /* Error Message Styling */
         #error-message {
             margin-top: 20px;
-            font-size: 1rem; /* Changed to relative unit */
+            font-size: 1rem;
             background-color: #721c24;
             border: 1px solid #f5c6cb;
             color: #f8d7da;
             padding: 10px;
             border-radius: 5px;
-            display: none; /* Initially hidden */
+            display: none;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
         }
@@ -366,29 +443,13 @@
             opacity: 1;
         }
 
-        /* Start Game Button */
-        #start-game-button {
-            background-color: #17a2b8;
-            color: #fff;
-        }
-
-        #start-game-button:hover {
-            background-color: #138496;
-            transform: translateY(-2px);
-        }
-
-        #start-game-button:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
-        }
-
         /* Game Container Styling */
         .game-container {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             width: 100%;
-            gap: 20px; /* Space between game-board and right-panel */
+            gap: 20px;
         }
 
         #game-board {
@@ -407,7 +468,6 @@
                 flex-direction: column;
                 align-items: center;
             }
-
             #game-board,
             #right-panel {
                 max-width: 100%;
@@ -420,7 +480,7 @@
             }
 
             .title {
-                font-size: 1.8rem; /* Adjusted from 36px */
+                font-size: 1.8rem;
             }
 
             .card {
@@ -431,7 +491,6 @@
                 flex-direction: column;
                 align-items: center;
             }
-
             #game-board,
             #right-panel {
                 max-width: 100%;
@@ -444,19 +503,18 @@
             .card-btn {
                 width: 50px;
                 height: 75px;
-                font-size: 0.875rem; /* Adjusted from 14px */
+                font-size: 0.875rem;
             }
 
             button {
-                padding: 0.5em 1em; /* Adjusted from 10px 20px */
-                font-size: 0.875rem; /* Adjusted from 14px */
+                padding: 0.5em 1em;
+                font-size: 0.875rem;
             }
 
             .turn-display {
-                font-size: 1rem; /* Adjusted from 16px */
+                font-size: 1rem;
             }
 
-            /* Adjust headings for smaller screens */
             .game-info h2 {
                 font-size: 1.4rem;
             }
@@ -468,7 +526,7 @@
 
         @media screen and (max-width: 480px) {
             .title {
-                font-size: 1.6rem; /* Adjusted from 28px */
+                font-size: 1.6rem;
             }
 
             .card {
@@ -493,19 +551,18 @@
             .card-btn {
                 width: 40px;
                 height: 60px;
-                font-size: 0.75rem; /* Adjusted from 12px */
+                font-size: 0.75rem;
             }
 
             button {
-                padding: 0.5em 1em; /* Adjusted from 8px 16px */
-                font-size: 0.75rem; /* Adjusted from 12px */
+                padding: 0.5em 1em;
+                font-size: 0.75rem;
             }
 
             .turn-display {
-                font-size: 0.875rem; /* Adjusted from 14px */
+                font-size: 0.875rem;
             }
 
-            /* Adjust game info headings and list items */
             .game-info h2 {
                 font-size: 1.2rem;
             }
@@ -514,11 +571,102 @@
                 font-size: 0.75rem;
             }
         }
+
+        /* Footer Styling */
+        .footer {
+            font-size: 0.875rem;
+            color: #bbb;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* Played Card Styling (Reduced size and to wrap) */
+        .played-card {
+            width: 40px;
+            height: 60px;
+            margin: 5px;
+            background-color: #2e2e2e;
+            border: 2px solid #444;
+            border-radius: 5px;
+            color: #f5f5f5;
+            font-size: 0.75rem;
+            cursor: default;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            background-image: url('https://www.transparenttextures.com/patterns/card-texture.png');
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            word-wrap: break-word;
+            white-space: normal;
+            padding: 5px;
+        }
+
+        .played-card:hover {
+            transform: scale(1.05);
+            background-color: #3e3e3e;
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
+        }
+
+        /* About Section in the modal */
+        .about-section h2 {
+            font-family: 'Roboto Slab', serif;
+            color: #ffd700;
+            text-shadow: 1px 1px 3px #000;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .about-section p,
+        .about-section li {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            color: #f5f5f5;
+        }
+
+        .about-section ul {
+            list-style: disc inside;
+        }
     </style>
 </head>
-
 <body>
+    <!-- Modal for About Section -->
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAboutModal()">&times;</span>
+            <div class="about-section">
+                <h2>About “Zheng Shangyou”</h2>
+                <p>
+                    <strong>Zheng Shangyou</strong> (争上游), also known as "Fight the Landlord's Cousin" in some regions, is a captivating card game that emphasizes strategy, quick decision-making, and timely teamwork (when multiple players are involved).
+                </p>
+                <p>
+                    The name "争上游" translates roughly to "strive to be on top," reflecting the competitive nature of the game as players race to deplete their hand before anyone else.
+                </p>
+                <h3>How to Play</h3>
+                <ul>
+                    <li>Players join a virtual room and each is dealt a hand of cards.</li>
+                    <li>On your turn, you can either play a valid combination of cards (single, pairs, bombs, straights, etc.) or choose to pass if you cannot or do not wish to play.</li>
+                    <li>When a player finishes all their cards, the game ends and the rankings are announced based on the order in which players run out of cards.</li>
+                </ul>
+                <h3>Key Rules</h3>
+                <ul>
+                    <li><strong>Valid Plays:</strong> Singles, pairs, bombs (3 or 4 of a kind), straights, and special joker or “4” combos are all part of the fun.</li>
+                    <li><strong>Bombs Beat Everything:</strong> A bomb can beat any lower combination, but beware of special combos like joker pairs or “4” sets that can trump bombs.</li>
+                    <li><strong>Joker Power:</strong> A pair of Jokers beats any other combination (even bombs), except for the cases specially defined in the rules (like ultra bombs of higher rank).</li>
+                </ul>
+                <p>
+                    In essence, always keep an eye out for powerful combos that can shift the course of the game. Anticipate your opponents’ moves, manage your hand carefully, and strive to be the first to play all your cards.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="overlay">
+        <!-- Icon Button (top-left) - Info Circle -->
+        <button class="info-icon" onclick="openAboutModal()">ℹ</button>
+
         <h1 class="title">Zheng Shangyou 争上游</h1>
         <div id="room-container" class="card">
             <h2>Join a Room</h2>
@@ -528,6 +676,8 @@
             <input type="text" id="player-name" placeholder="Your Name">
             <!-- Added aria-label for accessibility -->
             <button id="join-room-button" onclick="joinRoom()" aria-label="Join Room">Join Room</button>
+            <!-- Footer Footnote -->
+            <p class="footer">© Frederick Liu. All rights reserved.</p>
         </div>
 
         <!-- Game Container for Flex Layout -->
@@ -537,12 +687,10 @@
                 <div id="players" class="players-list"></div>
                 <div id="order-display" class="order-display"></div>
                 <div id="turn-display" class="turn-display"></div>
-                <!-- Adjusted button size and added aria-label -->
                 <button id="start-game-button" onclick="readyToStart()" style="display:none;" disabled aria-label="Start Game">Start Game</button>
                 <div id="hand" class="hand"></div>
                 <div id="action-buttons">
-                    <!-- Adjusted button sizes and added aria-labels -->
-                    <button id="send-button" onclick="playTurn()" style="display:none;" aria-label="Send Cards">Send</button>
+                    <button id="send-button" onclick="playTurn()" style="display:none;" aria-label="Send Cards">Play</button>
                     <button id="pass-button" onclick="passTurn()" style="display:none;" aria-label="Pass Turn">Pass</button>
                     <button id="exit-room" onclick="exitRoom()" style="display:none;" aria-label="Exit Room">Exit Room</button>
                 </div>
@@ -568,14 +716,21 @@
         let previousPlay = null;  // Track the previous play for rule enforcement
         const cardRankings = ['4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2', '3', 'Black Joker', 'Red Joker'];
 
+        /* MODAL FUNCTIONS */
+        function openAboutModal() {
+            document.getElementById('about-modal').style.display = 'block';
+        }
+        function closeAboutModal() {
+            document.getElementById('about-modal').style.display = 'none';
+        }
+
         function joinRoom() {
             const roomName = document.getElementById('room-name').value.trim();
             playerName = document.getElementById('player-name').value.trim();
             if (roomName && playerName) {
-
                 const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-                const hostname = window.location.hostname; // e.g., 'localhost'
-                const port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80); // Use existing port or default
+                const hostname = window.location.hostname;
+                const port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80);
                 const socketURL = `${protocol}${hostname}:${port}`;
                 console.log('Connecting to WebSocket at:', socketURL); // For debugging
                 socket = new WebSocket(socketURL);
@@ -613,7 +768,7 @@
                     updateTurnDisplay(message.currentPlayer);
                     break;
                 case 'player_move':
-                    previousPlay = message.playedCards.length > 0 ? message.playedCards[message.playedCards.length - 1] : null; // Track the last play or reset if empty
+                    previousPlay = message.playedCards.length > 0 ? message.playedCards[message.playedCards.length - 1] : null;
                     updatePlayerCards(message.players);
                     displayPlayedCards(message.playedCards);
                     updateTurnDisplay(message.currentPlayer);
@@ -625,7 +780,20 @@
                     displayRankings(message.rankings);
                     break;
                 case 'error':
-                    displayError(message.message);
+                    // If the server sends "duplicate_name" or "room_full", show alert + error
+                    if (message.message === 'duplicate_name') {
+                        alert('This name is already taken in this room. Please use a different name.');
+                        displayError('The name is already taken in this room. Please use a different name.');
+                        document.getElementById('join-room-button').disabled = false;
+                    }
+                    else if (message.message === 'room_full') {
+                        alert('The room is full. Please try a different room.');
+                        displayError('The room is full. Please try a different room.');
+                        document.getElementById('join-room-button').disabled = false;
+                    }
+                    else {
+                        displayError(message.message);
+                    }
                     break;
                 case 'player_left':
                     alert(message.message);
@@ -637,16 +805,15 @@
         }
 
         function displayError(message) {
-            console.log("Error function triggered:", message); // Check if the function is being called
+            console.log("Error function triggered:", message);
             const errorMessage = document.getElementById('error-message');
-            errorMessage.innerText = message; // Set the message text
-            errorMessage.classList.add('show'); // Add the class to make it visible
-
+            errorMessage.innerText = message;
+            errorMessage.classList.add('show');
             // Optionally hide it after some time
             setTimeout(() => {
                 errorMessage.classList.remove('show');
-                errorMessage.innerText = ''; // Clear the message if needed
-            }, 3000); // Adjust time as necessary
+                errorMessage.innerText = '';
+            }, 3000);
         }
 
         function renderPlayers(players) {
@@ -684,9 +851,7 @@
         }
 
         function distributeCards(deck) {
-            // Sort cards before displaying them
             const sortedDeck = deck.sort((a, b) => rankToValue(a.value) - rankToValue(b.value));
-            // Render the player's hand with the sorted deck of cards
             document.getElementById('hand').innerHTML = sortedDeck.map((card, index) =>
                 `<button class="card-btn" onclick="selectCard(${index})" id="card-${index}" disabled>${card.value}</button>`
             ).join('');
@@ -695,32 +860,25 @@
         }
 
         function selectCard(uniqueId) {
-            console.log('isPlayerTurn:', isPlayerTurn); // Debug log
-            if (!isPlayerTurn) return;  // Prevent card selection if it's not the player's turn
-
+            if (!isPlayerTurn) return;
             const cardButton = document.getElementById(`card-${uniqueId}`);
             if (cardButton) {
                 cardButton.classList.toggle('selected');
-            } else {
-                console.error(`Element with ID 'card-${uniqueId}' not found.`);
             }
         }
 
         function playTurn() {
-            if (!isPlayerTurn) return;  // Prevent sending cards if it's not the player's turn
+            if (!isPlayerTurn) return;
             const selectedCards = Array.from(document.getElementsByClassName('selected')).map(button => button.innerText);
             const playType = determinePlayType(selectedCards);
 
-            // Validate based on the current play type and the previous play
             if (!validatePlay(selectedCards, playType)) {
                 displayError("Invalid play based on the game rules.");
                 return;
             }
 
             if (selectedCards.length > 0) {
-                // Send the selected cards to the server
                 socket.send(JSON.stringify({ type: 'play_turn', room: currentRoom, cards: selectedCards }));
-                // Remove the cards from the player's hand after sending the play to the server
                 removePlayedCards(selectedCards);
             }
         }
@@ -745,147 +903,128 @@
                 return false;
             }
 
-            // Allow any valid play when there is no previous play
             if (!previousPlay) {
-                return true;
+                return true; // No previous play to compare with
             }
 
-            // Check if the current play is a pair of Jokers
             if (isPairOfJokers(cards)) {
-                return true; // Two Jokers can beat any previous play
+                return true; // Two Jokers beats any previous play
             }
 
-            // Validate pairs
             if (playType === 'Pair' && !isPair(cards)) {
-                return false; // Pair must consist of two cards of the same rank
+                return false;
             }
-
-            // Validate regular bombs
             if (playType === 'Regular Bomb' && !isRegularBomb(cards)) {
-                return false; // Regular Bomb must consist of three cards of the same rank
+                return false;
             }
-
-            // Validate ultra bombs
             if (playType === 'Ultra Bomb' && !isUltraBomb(cards)) {
-                return false; // Ultra Bomb must consist of four cards of the same rank
+                return false;
             }
 
-            // Handle precedence rules based on the previous play
-            if (previousPlay) {
-                const previousPlayType = determinePlayType(previousPlay.cards);
+            const previousPlayType = determinePlayType(previousPlay.cards);
 
-                // Rule: Nothing can beat a pair of Jokers
-                if (isPairOfJokers(previousPlay.cards)) {
-                    return false; // Nothing can beat a pair of Jokers
+            // If the previous play was a pair of Jokers, nothing can beat it
+            if (isPairOfJokers(previousPlay.cards)) {
+                return false;
+            }
+
+            // New Rule: single vs. pair
+            if (previousPlayType === 'Single' && playType === 'Pair' && !isPairOfJokers(cards)) {
+                return false;
+            }
+
+            // Ultra Bomb escalation
+            if (previousPlayType === 'Ultra Bomb') {
+                if (playType !== 'Ultra Bomb' && !isThreeOfFours(cards)) {
+                    return false;
                 }
-
-                // New Rule: A single card cannot be beaten by a pair of cards unless they are Jokers
-                if (previousPlayType === 'Single' && playType === 'Pair' && !isPairOfJokers(cards)) {
-                    return false; // Cannot beat a single card with a non-Joker pair
+                if (playType === 'Ultra Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                    return false;
                 }
+                if (isThreeOfFours(cards)) {
+                    collectBomb(previousPlay.cards, 'Ultra Bomb');
+                }
+            }
 
-                // Updated Rule: If the previous play was an Ultra Bomb, the next play must either be two Jokers, an Ultra Bomb of a higher rank, or three 4s.
-                if (previousPlayType === 'Ultra Bomb') {
-                    if (playType !== 'Ultra Bomb' && !isThreeOfFours(cards)) {
+            // Regular Bomb escalation
+            if (previousPlayType === 'Regular Bomb') {
+                if (playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfFours(cards)) {
+                    return false;
+                }
+                if (playType === 'Regular Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                    return false;
+                }
+                if (isPairOfFours(cards)) {
+                    collectBomb(previousPlay.cards, 'Regular Bomb');
+                }
+            }
+
+            // Pair escalation
+            if (previousPlayType === 'Pair') {
+                if (playType !== 'Pair' && playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
+                    return false;
+                }
+                if (playType === 'Pair' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                    return false;
+                }
+            }
+
+            // Straight escalation
+            if (previousPlayType === 'Straight') {
+                if (isPairSet(previousPlay.cards)) {
+                    if (
+                        (playType !== 'Straight' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) ||
+                        (playType === 'Straight' && !isPairSet(cards))
+                    ) {
                         return false;
                     }
-                    if (playType === 'Ultra Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
-                        return false; // The next Ultra Bomb must be of higher rank
+                    if (playType === 'Straight') {
+                        const pLen = previousPlay.cards.length;
+                        const cLen = cards.length;
+                        if (cLen !== pLen || rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                            return false;
+                        }
                     }
-                    if (isThreeOfFours(cards)) {
-                        collectBomb(previousPlay.cards, 'Ultra Bomb'); // Collect the Ultra Bomb if three 4s are played
-                    }
-                }
-
-                // Updated Rule: If the previous play was a Regular Bomb, the next play must either be two Jokers, a Regular Bomb of a higher rank, an Ultra Bomb, or a pair of 4s.
-                if (previousPlayType === 'Regular Bomb') {
-                    if (playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfFours(cards)) {
+                } else if (isRegularBombSet(previousPlay.cards)) {
+                    if (playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
                         return false;
                     }
                     if (playType === 'Regular Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
-                        return false; // The next Regular Bomb must be of higher rank
+                        return false;
                     }
-                    if (isPairOfFours(cards)) {
-                        collectBomb(previousPlay.cards, 'Regular Bomb'); // Collect the Regular Bomb if a pair of 4s is played
+                } else if (isUltraBombSet(previousPlay.cards)) {
+                    if (playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
+                        return false;
                     }
-                }
-
-                // New Rule: If the previous play was a Pair, the next play must be a Pair of a higher rank, a Regular Bomb, an Ultra Bomb, or a Pair of Jokers
-                if (previousPlayType === 'Pair') {
-                    if (playType !== 'Pair' && playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
-                        return false; // Invalid play, only a higher pair, bomb, or jokers allowed
+                    if (playType === 'Ultra Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                        return false;
                     }
-                    if (playType === 'Pair' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
-                        return false; // The next Pair must be of higher rank
+                } else {
+                    if (playType !== 'Straight' && playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
+                        return false;
                     }
-                }
-
-                // New Rule: If the previous play was a Straight, the next play must be a Straight with the same number of cards but a higher rank, a Regular Bomb, an Ultra Bomb, or two Jokers
-                if (previousPlayType === 'Straight') {
-                    if (isPairSet(previousPlay.cards)) {
-                        // If the previous play was a pair straight, it can only be beaten by a higher pair straight, an ultra bomb, or a pair of jokers
-                        if (
-                            (playType !== 'Straight' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) ||
-                            (playType === 'Straight' && !isPairSet(cards))
-                        ) {
-                            return false; // Invalid play, only a higher pair straight, ultra bomb, or jokers allowed
-                        }
-                        if (playType === 'Straight') {
-                            // Ensure the pair straight has the same number of pairs and is of higher rank
-                            const previousStraightLength = previousPlay.cards.length;
-                            const currentStraightLength = cards.length;
-
-                            // Check if the current straight is a higher rank and of the same length
-                            if (currentStraightLength !== previousStraightLength || rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
-                                return false; // The next pair straight must have the same length and be of higher rank
-                            }
-                        }
-                    } else if (isRegularBombSet(previousPlay.cards)) {
-                        // If previous play was a regular bomb set straight, it can only be beaten by a higher regular bomb straight, an ultra bomb straight, or a pair of jokers
-                        if (playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
-                            return false; // Invalid play, only a higher regular bomb straight, ultra bomb straight, or jokers can beat a regular bomb straight
-                        }
-                        if (playType === 'Regular Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
-                            return false; // The next regular bomb straight must be of higher rank
-                        }
-                    } else if (isUltraBombSet(previousPlay.cards)) {
-                        // If previous play was an ultra bomb set straight, it can only be beaten by a higher ultra bomb straight or a pair of jokers
-                        if (playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
-                            return false; // Invalid play, only a higher ultra bomb straight or jokers can beat an ultra bomb straight
-                        }
-                        if (playType === 'Ultra Bomb' && rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
-                            return false; // The next ultra bomb straight must be of higher rank
-                        }
-                    } else {
-                        // Handle normal single-card straights
-                        if (playType !== 'Straight' && playType !== 'Regular Bomb' && playType !== 'Ultra Bomb' && !isPairOfJokers(cards)) {
-                            return false; // Invalid play, only a higher straight, bomb, or jokers allowed
-                        }
-                        if (playType === 'Straight') {
-                            // Ensure the straight has the same number of cards and a higher rank
-                            const previousStraightLength = previousPlay.cards.length;
-                            if (cards.length !== previousStraightLength || rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
-                                return false; // The next Straight must have the same length and be of higher rank
-                            }
+                    if (playType === 'Straight') {
+                        const pLen = previousPlay.cards.length;
+                        if (cards.length !== pLen || rankToValue(cards[0]) <= rankToValue(previousPlay.cards[0])) {
+                            return false;
                         }
                     }
-                }
-
-                // Rule: Single card must be of higher rank than the previous single card
-                if (previousPlayType === 'Single' && playType === 'Single') {
-                    return rankToValue(cards[0]) > rankToValue(previousPlay.cards[0]);
-                }
-
-                // Collecting bombs
-                if (playType === 'Regular Bomb' && previousPlayType === 'Ultra Bomb') {
-                    return rankToValue(cards[0]) === rankToValue('4'); // Regular Bomb of 4s can collect an Ultra Bomb
-                }
-                if (playType === 'Pair' && previousPlayType === 'Regular Bomb') {
-                    return rankToValue(cards[0]) === rankToValue('4'); // Pair of 4s can collect a Regular Bomb
                 }
             }
 
-            return true; // If all validations pass, the play is valid
+            if (previousPlayType === 'Single' && playType === 'Single') {
+                return rankToValue(cards[0]) > rankToValue(previousPlay.cards[0]);
+            }
+
+            // Collecting bombs
+            if (playType === 'Regular Bomb' && previousPlayType === 'Ultra Bomb') {
+                return rankToValue(cards[0]) === rankToValue('4');
+            }
+            if (playType === 'Pair' && previousPlayType === 'Regular Bomb') {
+                return rankToValue(cards[0]) === rankToValue('4');
+            }
+
+            return true;
         }
 
         function isThreeOfFours(cards) {
@@ -940,11 +1079,9 @@
                 newCardButton.classList.add('card-btn');
                 newCardButton.innerText = card;
 
-                // Generate a unique ID for each card to prevent any conflicts
                 const uniqueId = generateUUID();
                 newCardButton.id = `card-${uniqueId}`;
 
-                // Bind the click event to the unique ID
                 newCardButton.onclick = function () {
                     selectCard(uniqueId);
                 };
@@ -952,16 +1089,14 @@
                 handElement.appendChild(newCardButton);
             });
 
-            // Update the player's card count in the UI
             const playerCardCount = handElement.children.length;
             document.getElementById(`card-count-${playerName}`).innerText = playerCardCount;
 
-            // Send the update to the server to ensure consistency
             socket.send(JSON.stringify({
                 type: 'collect_bomb',
                 room: currentRoom,
                 playerName: playerName,
-                bombCards: bombCards // Send the collected bomb cards to the server
+                bombCards: bombCards
             }));
         }
 
@@ -969,19 +1104,12 @@
             if (cards.length !== 2) {
                 return false;
             }
-
-            const card1 = cards[0];
-            const card2 = cards[1];
-
-            // Check if the two cards have the same value
+            const [card1, card2] = cards;
             if (card1 === card2) {
                 return true;
             }
-
-            // Check if the cards are a pair of Black and Red Jokers
             const isJokerPair = (card1 === 'Black Joker' && card2 === 'Red Joker') ||
-                (card1 === 'Red Joker' && card2 === 'Black Joker');
-
+                                (card1 === 'Red Joker' && card2 === 'Black Joker');
             return isJokerPair;
         }
 
@@ -994,9 +1122,8 @@
         }
 
         function isStraight(cards) {
-            if (cards.length < 3) return false; // Minimum of 3 cards for a straight
+            if (cards.length < 3) return false;
 
-            // Step 1: Group the cards by value
             const groupedCards = {};
             cards.forEach(card => {
                 if (!groupedCards[card]) {
@@ -1005,38 +1132,33 @@
                 groupedCards[card]++;
             });
 
-            // Step 2: Determine the type of set (Pair, Regular Bomb, Ultra Bomb)
             const groupCounts = Object.values(groupedCards);
             const isPairSet = groupCounts.every(count => count === 2);
             const isRegularBombSet = groupCounts.every(count => count === 3);
             const isUltraBombSet = groupCounts.every(count => count === 4);
 
-            // Step 3: Check for duplicates only if it's not a pair set, regular bomb set, or ultra bomb set
             if (!isPairSet && !isRegularBombSet && !isUltraBombSet) {
                 const hasDuplicates = groupCounts.some(count => count > 1);
                 if (hasDuplicates) {
-                    return false; // Invalid straight due to duplicates
+                    return false;
                 }
             }
 
-            // Step 4: Sort the values and check if they are consecutive
             const sortedValues = Object.keys(groupedCards)
                 .map(value => rankToValue(value))
                 .sort((a, b) => a - b);
 
             for (let i = 1; i < sortedValues.length; i++) {
                 if (sortedValues[i] !== sortedValues[i - 1] + 1) {
-                    return false; // Not a consecutive straight
+                    return false;
                 }
             }
 
-            // Step 5: Ensure strict consecutiveness for pairs, regular bombs, or ultra bombs
             if ((isPairSet || isRegularBombSet || isUltraBombSet) && sortedValues.length >= 3) {
-                return true; // Valid straight of pairs, regular bombs, or ultra bombs
+                return true;
             }
 
-            // Step 6: Ensure there are at least 3 consecutive cards for a single-card straight
-            return sortedValues.length >= 3; // Valid single-card straight
+            return sortedValues.length >= 3;
         }
 
         function isPairOfJokers(cards) {
@@ -1049,18 +1171,12 @@
 
         function removePlayedCards(cards) {
             cards.forEach(card => {
-                // Find the button elements that match the card value and are selected
                 const cardButtons = Array.from(document.getElementsByClassName('card-btn'));
-                // Find all buttons with the matching card value
                 const buttonsToRemove = cardButtons.filter(btn => btn.innerText.trim() === card.trim() && btn.classList.contains('selected'));
-                // Remove the found buttons from the DOM
                 buttonsToRemove.forEach(button => {
-                    console.log(`Removing card: ${card}`);  // Debugging output
-                    button.remove();  // Remove the button from the DOM
+                    button.remove();
                 });
             });
-
-            // Update the player's card count after removing the played cards
             const playerCardCount = document.getElementsByClassName('card-btn').length;
             document.getElementById(`card-count-${playerName}`).innerText = playerCardCount;
         }
@@ -1070,7 +1186,7 @@
         }
 
         function passTurn() {
-            if (!isPlayerTurn) return;  // Prevent passing if it's not the player's turn
+            if (!isPlayerTurn) return;
             socket.send(JSON.stringify({ type: 'pass_turn', room: currentRoom }));
         }
 
@@ -1088,9 +1204,17 @@
         }
 
         function displayPlayedCards(playedCards) {
-            document.getElementById('played-cards').innerHTML = playedCards.length > 0
-                ? playedCards.map(play => `<p>${play.name} played: ${play.cards.join(', ')}</p>`).join('')
-                : '<p>All players passed. You can play any valid combination of cards.</p>'; // Message for reset
+            const playedCardsContainer = document.getElementById('played-cards');
+            if (playedCards.length > 0) {
+                playedCardsContainer.innerHTML = playedCards.map(play => {
+                    const cardButtons = play.cards.map(card => {
+                        return `<button class="played-card" disabled>${card}</button>`;
+                    }).join('');
+                    return `<p>${play.name} played: ${cardButtons}</p>`;
+                }).join('');
+            } else {
+                playedCardsContainer.innerHTML = '<p>All players passed. You can play any valid combination of cards.</p>';
+            }
         }
 
         function displayRankings(rankings) {
@@ -1100,7 +1224,6 @@
         }
 
         function disableOtherButtons() {
-            // Disable all buttons except the "Exit Room" button
             const buttonsToDisable = ['join-room-button', 'start-game-button', 'send-button', 'pass-button'];
             buttonsToDisable.forEach(buttonId => {
                 const button = document.getElementById(buttonId);
@@ -1108,8 +1231,6 @@
                     button.disabled = true;
                 }
             });
-
-            // Ensure the "Exit Room" button remains enabled
             const exitButton = document.getElementById('exit-room');
             if (exitButton) {
                 exitButton.disabled = false;
@@ -1117,7 +1238,6 @@
         }
 
         function enableButtonsAfterExit() {
-            // Enable all buttons except the "Exit Room" button
             const buttonsToEnable = ['join-room-button', 'start-game-button', 'send-button', 'pass-button'];
             buttonsToEnable.forEach(buttonId => {
                 const button = document.getElementById(buttonId);
@@ -1125,8 +1245,6 @@
                     button.disabled = false;
                 }
             });
-
-            // Hide and disable the "Exit Room" button
             const exitButton = document.getElementById('exit-room');
             if (exitButton) {
                 exitButton.style.display = 'none';
@@ -1139,7 +1257,7 @@
             socket.close();
             currentRoom = null;
             document.getElementById('game-board').style.display = 'none';
-            document.getElementById('right-panel').style.display = 'none';  // Hide the right panel
+            document.getElementById('right-panel').style.display = 'none';
             document.getElementById('room-container').style.display = 'block';
             document.getElementById('game-info').innerHTML = '';
             document.getElementById('played-cards').innerHTML = '';
@@ -1147,18 +1265,15 @@
             document.getElementById('room-name').value = '';
             document.getElementById('player-name').value = '';
             document.getElementById('exit-room').style.display = 'none';
-
-            // Re-enable all buttons for future use
             enableButtonsAfterExit();
         }
 
         window.onload = function () {
             document.getElementById('room-container').style.display = 'block';
             document.getElementById('game-board').style.display = 'none';
-            document.getElementById('right-panel').style.display = 'none';  // Ensure the right panel is hidden initially
-            document.getElementById('exit-room').disabled = true; // Ensure Exit Room is disabled initially
+            document.getElementById('right-panel').style.display = 'none';
+            document.getElementById('exit-room').disabled = true;
         };
     </script>
 </body>
-
 </html>
