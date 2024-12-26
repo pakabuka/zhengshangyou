@@ -83,12 +83,14 @@
             const roomName = document.getElementById('room-name').value.trim();
             playerName = document.getElementById('player-name').value.trim();
             if (roomName && playerName) {
-                socket = new WebSocket('ws://localhost:8080');
-                // socket = new WebSocket('wss://zhengshangyou.onrender.com'); //change for deployment
-                // const socketURL = location.protocol === 'https:'
-                //     ? 'wss://zhengshangyou.onrender.com'
-                //     : 'ws://localhost:443';
-                // socket = new WebSocket(socketURL);
+
+                const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+                const hostname = window.location.hostname; // e.g., 'localhost'
+                const port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80); // Use existing port or default
+                const socketURL = `${protocol}${hostname}:${port}`;
+                console.log('Connecting to WebSocket at:', socketURL); // For debugging
+                socket = new WebSocket(socketURL);
+                
                 socket.onopen = () => {
                     socket.send(JSON.stringify({ type: 'join', room: roomName, playerName }));
                     document.getElementById('join-room-button').disabled = true;
