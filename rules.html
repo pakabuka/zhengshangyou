@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Updated viewport meta tag with viewport-fit -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Zheng Shangyou Rules</title>
+
+  <!-- Google Fonts for a more elegant typography -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto+Slab:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* Reset some default styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Body Styling */
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-image: url('https://www.transparenttextures.com/patterns/black-linen.png'); /* Subtle texture */
+      background-size: cover; /* Ensure background covers entire screen */
+      background-color: #2e2e2e;
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Start from top to allow scrolling */
+      padding: 20px;
+    }
+
+    /* Overlay for semi-transparent background with safe area insets */
+    .overlay {
+      background: rgba(0, 0, 0, 0.8);
+      padding: calc(30px + env(safe-area-inset-top)) calc(30px + env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) calc(30px + env(safe-area-inset-left));
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    /* Title Styling */
+    h1 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 2.2rem;
+      color: #ffd700; /* Gold color */
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px #000;
+      text-align: center;
+    }
+
+    h2,
+    h3,
+    h4 {
+      font-family: 'Roboto Slab', serif;
+      color: #ffd700;
+      text-shadow: 1px 1px 3px #000;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 1em;
+      line-height: 1.6;
+    }
+
+    ul {
+      list-style: disc inside;
+      margin-bottom: 1em;
+      line-height: 1.6;
+    }
+
+    li {
+      margin-bottom: 0.5em;
+    }
+
+    /* Section for card-like buttons */
+    .card-rank-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+      justify-content: flex-start;
+    }
+
+    /* Card-Button Style */
+    .card-btn {
+      width: 60px;
+      height: 90px;
+      background-color: #2e2e2e;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
+      color: #f5f5f5;
+      font-size: 0.875rem;
+      cursor: default;
+      transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+      background-image: url('https://www.transparenttextures.com/patterns/card-texture.png');
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .card-btn:hover {
+      transform: scale(1.05);
+      background-color: #3e3e3e;
+      box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
+    }
+    .joker-red {
+      border-color: #ff4444;
+    }
+    .joker-black {
+      border-color: #666;
+    }
+
+    /* Example Cards Container */
+    .cards-example {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Single Card Style for Examples */
+    .card-example {
+      width: 60px;
+      height: 90px;
+      background-color: #2e2e2e;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
+      color: #f5f5f5;
+      font-size: 0.875rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      background-image: url('https://www.transparenttextures.com/patterns/card-texture.png');
+      background-size: cover;
+    }
+
+    /* Example Play Section */
+    .play-example {
+      background-color: #3e3e3e;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    .play-example h4 {
+      margin-bottom: 10px;
+    }
+    .arrow {
+      margin: 0 10px;
+      color: #ffd700;
+      font-size: 1.5rem;
+    }
+
+    /* Footer Note */
+    .footer {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #bbb;
+      margin-top: 20px;
+    }
+
+    /* Responsive Adjustments */
+    @media screen and (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      .card-btn, .card-example {
+        width: 50px;
+        height: 75px;
+        font-size: 0.75rem;
+      }
+      .arrow {
+        font-size: 1.2rem;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .card-btn, .card-example {
+        width: 40px;
+        height: 60px;
+        font-size: 0.6rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .arrow {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay">
+    <h1>Zheng Shangyou (争上游)</h1>
+    <p>
+      <strong>Zheng Shangyou</strong>, also known as “Strive to be on top,” is a fast-paced card game that challenges
+      players to deplete their hand before anyone else. Below you'll find the rules, the valid combinations, and 
+      some play examples to show how cards can be escalated or beaten.
+    </p>
+
+    <h2>Game Setup & Room Joining</h2>
+    <ul>
+      <li>A virtual “poker room” supports a <strong>minimum of 2</strong> players and a <strong>maximum of 5</strong>.</li>
+      <li>Players enter a room name and a player name to join. They wait until enough players arrive.</li>
+      <li>The deck has <strong>54 cards</strong>:
+        <ul>
+          <li>52 cards across 4 suits (Diamonds, Clubs, Hearts, Spades).</li>
+          <li>2 Jokers (1 Red Joker, 1 Black Joker).</li>
+        </ul>
+      </li>
+      <li>Cards are dealt <strong>randomly and evenly</strong>; no card duplication across players.</li>
+      <li>Once dealt, players take turns playing cards (by selecting them and clicking a send/play button).</li>
+    </ul>
+
+    <h2>Card Rankings (High → Low)</h2>
+    <p>
+      <strong>Red Joker</strong>, <strong>Black Joker</strong>, 3, 2, A, K, Q, J, 10, 9, 8, 7, 6, 5, 4.
+    </p>
+
+    <!-- Visualization as Buttons -->
+    <div class="card-rank-buttons">
+      <button class="card-btn joker-red">Red Joker</button>
+      <button class="card-btn joker-black">Black Joker</button>
+      <button class="card-btn">3</button>
+      <button class="card-btn">2</button>
+      <button class="card-btn">A</button>
+      <button class="card-btn">K</button>
+      <button class="card-btn">Q</button>
+      <button class="card-btn">J</button>
+      <button class="card-btn">10</button>
+      <button class="card-btn">9</button>
+      <button class="card-btn">8</button>
+      <button class="card-btn">7</button>
+      <button class="card-btn">6</button>
+      <button class="card-btn">5</button>
+      <button class="card-btn">4</button>
+    </div>
+
+    <h2>Valid Combinations</h2>
+    <ul>
+      <li>
+        <strong>Single Card:</strong> Any single card. You cannot respond with pairs or straights if the current trick is 
+        a single card (you can only beat it with a higher single card or a bomb-type combo).
+      </li>
+      <li>
+        <strong>Pairs:</strong> Two cards of the same rank (e.g., “4 and 4,” “9 and 9,” etc.). 
+        <br />Nothing can beat a <strong>Pair of Jokers</strong> (highest possible pair).
+      </li>
+      <li>
+        <strong>Straight (顺子):</strong> Three or more consecutive cards (e.g., 3-4-5 or 9-10-J-Q-K). 
+        <br />If someone plays a 5-card straight, you must beat it with a higher 5-card straight (not 4 or 6 cards).
+      </li>
+      <li>
+        <strong>Regular Bomb:</strong> Three cards of the same rank (e.g., 4-4-4). This beats all singles, pairs, or straights, 
+        but loses to:
+        <ul>
+          <li>A <strong>Pair of Jokers</strong></li>
+          <li>An <strong>Ultra Bomb</strong> (four of a kind) of higher rank</li>
+        </ul>
+        <em>Special Twist:</em> A “Regular Bomb” of three 4s (4-4-4) can collect an Ultra Bomb from the previous trick 
+        (explained more below).
+      </li>
+      <li>
+        <strong>Ultra Bomb:</strong> Four cards of the same rank (e.g., 5-5-5-5). It can beat almost anything, including 
+        a single Joker. However, a higher Ultra Bomb (e.g., 9-9-9-9 vs. 5-5-5-5) can still beat it.
+      </li>
+    </ul>
+
+    <h3>Escalation & Special 4's Rule</h3>
+    <ul>
+      <li>If you play a <strong>Pair of 4s</strong> (4-4) against a Regular Bomb, you can “collect” that bomb (it’s like a special takeover mechanic).</li>
+      <li>If you play a <strong>Regular Bomb</strong> of 4-4-4 against an Ultra Bomb, you can collect that Ultra Bomb.</li>
+      <li>A <strong>Pair of Jokers</strong> cannot be beaten by anything.</li>
+    </ul>
+
+    <h2>Gameplay Flow</h2>
+    <ol>
+      <li>Once everyone is in the room, the game starts. Cards are dealt automatically.</li>
+      <li>On your turn, select cards in your hand and click “Play” (or “Send”) to propose a valid combination.</li>
+      <li>If you cannot or do not wish to beat the current trick, click “Pass.” Once all other players pass, 
+        the trick resets, and you may start fresh with any valid combination.</li>
+      <li>The first player to run out of cards claims the top rank. Others continue until all have finished, 
+        or until only one person remains with cards (the last rank).</li>
+      <li>After the game concludes, a final ranking is displayed. Players may exit the room. Once all exit, the room resets.</li>
+    </ol>
+
+    <!-- Detailed Example Section -->
+    <h2>Examples of Play</h2>
+
+    <!-- Example 1: Single Escalation -->
+    <div class="play-example">
+      <h4>Example 1: Beating a Single Card</h4>
+      <p>If the previous trick is a single <strong>9</strong>, you can beat it with any single card of higher rank 
+        (10 or above), or you can escalate straight to a bomb (3-of-a-kind, 4-of-a-kind, or Pair of Jokers).</p>
+      <div class="cards-example">
+        <!-- Current Trick: Single 9 -->
+        <div class="card-example">9</div>
+        <span class="arrow">→</span>
+        <!-- Higher Single: Q -->
+        <div class="card-example">Q</div>
+        <span style="font-size:1rem;">(or)</span>
+        <!-- Or, a bomb with 3 of a kind: 5-5-5 -->
+        <div class="card-example">5</div>
+        <div class="card-example">5</div>
+        <div class="card-example">5</div>
+        <span style="font-size:1rem;">(or)</span>
+        <!-- Pair of Jokers (ultimate) -->
+        <div class="card-example joker-black">Black Joker</div>
+        <div class="card-example joker-red">Red Joker</div>
+      </div>
+    </div>
+
+    <!-- Example 2: Pair Escalation -->
+    <div class="play-example">
+      <h4>Example 2: Beating a Pair</h4>
+      <p>
+        If the previous trick is a <strong>Pair of 8s</strong>, you can beat it with a higher pair 
+        (e.g., 9-9, 10-10, J-J, …) or you can jump to a bomb. Remember, 
+        <strong>Pair of Jokers</strong> is unbeatable.
+      </p>
+      <div class="cards-example">
+        <!-- Current Trick: Pair of 8s -->
+        <div class="card-example">8</div>
+        <div class="card-example">8</div>
+        <span class="arrow">→</span>
+        <!-- Higher Pair: 9,9 -->
+        <div class="card-example">9</div>
+        <div class="card-example">9</div>
+        <span style="font-size:1rem;">(or)</span>
+        <!-- Or a Bomb with 4-4-4 (Regular Bomb) -->
+        <div class="card-example">4</div>
+        <div class="card-example">4</div>
+        <div class="card-example">4</div>
+        <span style="font-size:1rem;">(or)</span>
+        <!-- Or Pair of Jokers -->
+        <div class="card-example joker-black">Black Joker</div>
+        <div class="card-example joker-red">Red Joker</div>
+      </div>
+    </div>
+
+    <!-- Example 3: Straight Escalation -->
+    <div class="play-example">
+      <h4>Example 3: Beating a 5-Card Straight</h4>
+      <p>
+        Suppose the current trick is a 5-card straight: <strong>3-4-5-6-7</strong>. 
+        You can only beat it with a higher 5-card straight (like 4-5-6-7-8, 5-6-7-8-9, etc.), 
+        or escalate to a bomb (Regular, Ultra, or Pair of Jokers).
+      </p>
+      <div class="cards-example">
+        <!-- Current Trick: 3-4-5-6-7 -->
+        <div class="card-example">3</div>
+        <div class="card-example">4</div>
+        <div class="card-example">5</div>
+        <div class="card-example">6</div>
+        <div class="card-example">7</div>
+        <span class="arrow">→</span>
+        <!-- Higher 5-card straight: 4-5-6-7-8 -->
+        <div class="card-example">4</div>
+        <div class="card-example">5</div>
+        <div class="card-example">6</div>
+        <div class="card-example">7</div>
+        <div class="card-example">8</div>
+        <span style="font-size:1rem;">(or)</span>
+        <!-- or a Bomb, e.g., 2-2-2 (Regular Bomb)  -->
+        <div class="card-example">2</div>
+        <div class="card-example">2</div>
+        <div class="card-example">2</div>
+      </div>
+    </div>
+
+    <!-- Example 4: Special 4's Rule (Collecting Bombs) -->
+    <div class="play-example">
+      <h4>Example 4: Using 4’s to “Collect” Bombs</h4>
+      <p>
+        If the last trick was an <strong>Ultra Bomb</strong> (four of a kind), 
+        and you play a <strong>Regular Bomb of 4s</strong> (4-4-4), 
+        you can <em>collect</em> that Ultra Bomb. Similarly, if the last trick was a Regular Bomb, 
+        a <strong>Pair of 4s</strong> can collect it.
+      </p>
+      <div class="cards-example">
+        <!-- Current Trick: an Ultra Bomb of 7-7-7-7 -->
+        <div class="card-example">7</div>
+        <div class="card-example">7</div>
+        <div class="card-example">7</div>
+        <div class="card-example">7</div>
+        <span class="arrow">→</span>
+        <!-- "Collect" with a Regular Bomb of 4s -->
+        <div class="card-example">4</div>
+        <div class="card-example">4</div>
+        <div class="card-example">4</div>
+      </div>
+    </div>
+
+    <!-- Example 5: Playing a Straight of Pairs -->
+<div class="play-example">
+    <h4>Example 5: Playing a Straight of Pairs</h4>
+    <p>
+      A <strong>Straight of Pairs</strong> consists of at least three consecutive pairs (e.g., 4-4, 5-5, 6-6). 
+      To beat a Straight of Pairs, the next player must play a higher Straight of Pairs with the same length 
+      (e.g., 6-6, 7-7, 8-8 vs. 4-4, 5-5, 6-6) or escalate to a bomb (Regular or Ultra).
+    </p>
+    <div class="cards-example">
+      <!-- Current Trick: Straight of Pairs (4-4, 5-5, 6-6) -->
+      <div class="card-example">4</div>
+      <div class="card-example">4</div>
+      <div class="card-example">5</div>
+      <div class="card-example">5</div>
+      <div class="card-example">6</div>
+      <div class="card-example">6</div>
+      <span class="arrow">→</span>
+      <!-- Higher Straight of Pairs: 6-6, 7-7, 8-8 -->
+      <div class="card-example">6</div>
+      <div class="card-example">6</div>
+      <div class="card-example">7</div>
+      <div class="card-example">7</div>
+      <div class="card-example">8</div>
+      <div class="card-example">8</div>
+      <span style="font-size:1rem;">(or)</span>
+      <!-- Escalate with a Regular Bomb: 9-9-9 -->
+      <div class="card-example">9</div>
+      <div class="card-example">9</div>
+      <div class="card-example">9</div>
+    </div>
+  </div>
+    
+
+    <!-- <p>
+      Note: “Collecting” the bomb means you effectively seize control, can add those bomb cards to your hand if 
+      that’s part of the agreed rules, or otherwise gain an advantage (depending on the specific implementation).
+    </p> -->
+
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="location.href='/';" 
+                style="
+                  font-family: 'Montserrat', sans-serif;
+                  background-color: #ffd700;
+                  color: #2e2e2e;
+                  padding: 10px 20px;
+                  border: none;
+                  border-radius: 5px;
+                  font-size: 1rem;
+                  cursor: pointer;
+                  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+                  transition: transform 0.2s, background-color 0.2s;
+                "
+                onmouseover="this.style.backgroundColor='#c4a708';"
+                onmouseout="this.style.backgroundColor='#ffd700';">
+          Back to Game
+        </button>
+      </div>
+
+    <p class="footer">
+      © 2024 Frederick Liu. All rights reserved.
+    </p>
+  </div>
+</body>
+</html>
