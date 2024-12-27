@@ -778,7 +778,7 @@
                     <button id="pass-button" onclick="passTurn()" style="display:none;"
                         aria-label="Pass Turn">Pass（不要）</button>
                     <button id="exit-room" onclick="exitRoom()" style="display:none;" aria-label="Exit Room">Exit
-                        Room</button>
+                        Room（退出房间）</button>
                 </div>
 
                 <!-- Error Message Display -->
@@ -1325,12 +1325,12 @@
                     return `<p>${play.name} played（打了）: ${cardButtons}</p>`;
                 }).join('');
             } else {
-                playedCardsContainer.innerHTML = '<p>All players passed. You can play any valid combination of cards.</p>';
+                playedCardsContainer.innerHTML = '<p>All players passed. You can play any valid combination of cards.（所有玩家都不要，你可以继续出牌）</p>';
             }
         }
 
         function displayRankings(rankings) {
-            document.getElementById('game-info').innerHTML = `<h2>Game Over! Rankings:</h2><ol>${rankings.map(name => `<li>${name}</li>`).join('')}</ol>`;
+            document.getElementById('game-info').innerHTML = `<h2>Game Over! Rankings（排名）:</h2><ol>${rankings.map(name => `<li>${name}</li>`).join('')}</ol>`;
             document.getElementById('exit-room').style.display = 'block';
             disableOtherButtons();
         }
